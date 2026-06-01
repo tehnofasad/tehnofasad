@@ -1,9 +1,9 @@
 {
-  "name": "Tehnofasad",
+  "name": "tehnofasad",
   "version": "1.0.0",
-  "description": "",
+  "description": "TEHNOFASAD landing page and lead form server",
   "scripts": {
-    "start": "npx --yes serve .",
+    "start": "node server.js",
     "test": "echo \"No automated tests configured\" && exit 0"
   },
   "private": true

@@ -3,157 +3,757 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TEHNOFASAD - panouri sandwich in stoc in Balti, Moldova</title>
-    <meta name="description" content="Panouri sandwich pentru acoperis si pereti, disponibile din stoc in Balti. Solicita pret, rezerva cantitatea necesara sau suna la +373 791 55 791.">
-    <meta name="keywords" content="panouri sandwich Moldova, panouri sandwich Balti, sandwich panel Moldova, sendvich paneli Beltsy">
+    <title>TEHNOFASAD - panouri sandwich in stoc in Balti</title>
+    <meta name="description" content="Panouri sandwich pentru pereti si acoperis, disponibile din stoc in Balti. Cere oferta dupa tip, grosime si cantitate.">
+    <meta name="keywords" content="panouri sandwich Moldova, panouri sandwich Balti, panouri perete, panouri acoperis, tehnofasad">
+    <meta name="theme-color" content="#101820">
     <meta property="og:title" content="TEHNOFASAD - panouri sandwich in stoc">
-    <meta property="og:description" content="Panouri sandwich disponibile in Balti, fara asteptarea comenzilor. Cere oferta de pret sau suna acum.">
-    <meta property="og:image" content="assets/sandwich-panel.jpg">
+    <meta property="og:description" content="Depozit in Balti. Panouri sandwich pentru pereti si acoperis, consultatie si rezervare rapida.">
+    <meta property="og:image" content="https://tehnofasad.md/assets/sandwich-panel.jpg">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tehnofasad.md/">
+    <link rel="canonical" href="https://tehnofasad.md/">
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="preload" as="image" href="assets/sandwich-panel.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "TEHNOFASAD S.R.L.",
+      "description": "Panouri sandwich pentru pereti si acoperis, disponibile din stoc in Balti.",
+      "url": "https://tehnofasad.md",
+      "telephone": "+37379155791",
+      "email": "info@tehnofasad.md",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "str. Lev Dovator 1",
+        "addressLocality": "Balti",
+        "addressCountry": "MD"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 47.7741648,
+        "longitude": 27.9116626
+      },
+      "sameAs": [
+        "https://www.instagram.com/tehno.fasad/"
+      ]
+    }
+    </script>
   </head>
   <body>
+    <div class="top-strip">
+      <a href="tel:+37379155791">+373 791 55 791</a>
+      <a href="mailto:info@tehnofasad.md">info@tehnofasad.md</a>
+      <span>mun. Balti, str. Lev Dovator 1</span>
+      <button type="button" data-open-form>Cere oferta</button>
+    </div>
+
     <header class="site-header">
       <a class="brand" href="#top" aria-label="TEHNOFASAD">
         <img src="assets/logo.png" alt="TEHNOFASAD">
       </a>
+      <button class="nav-toggle" type="button" aria-label="Deschide meniu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
       <nav class="main-nav" aria-label="Navigare principala">
-        <a href="#benefits">Avantaje</a>
-        <a href="#products">Produse</a>
-        <a href="#process">Comanda</a>
-        <a href="#contacts">Contacte</a>
+        <a href="#about" data-i18n="nav.about">Despre noi</a>
+        <div class="nav-dropdown">
+          <a href="#products" class="nav-dropdown__trigger" data-i18n="nav.products">Produse</a>
+          <div class="nav-dropdown__menu">
+            <a href="#products">Panouri sandwich</a>
+            <a href="#products">Panouri sandwich de perete</a>
+            <a href="#products">Panouri sandwich de acoperis</a>
+            <a href="#products">Tigla metalica</a>
+            <a href="#products">Tigla metalica modulara</a>
+            <a href="#products">Tigla bituminoasa</a>
+            <a href="#products">Tabla profilata</a>
+            <a href="#products">Sisteme pluviale</a>
+            <a href="#products">Accesorii pentru acoperis</a>
+          </div>
+        </div>
+        <a href="#stock" data-i18n="nav.stock">Stoc</a>
+        <a href="#estimate" data-i18n="nav.calculator">Calculator</a>
+        <a href="#roof-3d">3D acoperis</a>
+        <a href="#portfolio">Portofoliu</a>
+        <a href="#benefits" data-i18n="nav.benefits">Avantaje</a>
+        <a href="#process" data-i18n="nav.order">Comanda</a>
+        <a href="#reviews">Recenzii</a>
+        <a href="#contacts" data-i18n="nav.contacts">Contacte</a>
       </nav>
-      <a class="header-phone" href="tel:+37379155791">+373 791 55 791</a>
+      <div class="header-actions">
+        <div class="social-links" aria-label="Social media">
+          <a class="social-links__item social-links__item--instagram" href="https://www.instagram.com/tehno.fasad/" target="_blank" rel="noreferrer" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7.5 2.8h9A4.7 4.7 0 0 1 21.2 7.5v9a4.7 4.7 0 0 1-4.7 4.7h-9a4.7 4.7 0 0 1-4.7-4.7v-9a4.7 4.7 0 0 1 4.7-4.7Zm0 1.8a2.9 2.9 0 0 0-2.9 2.9v9a2.9 2.9 0 0 0 2.9 2.9h9a2.9 2.9 0 0 0 2.9-2.9v-9a2.9 2.9 0 0 0-2.9-2.9h-9Zm4.5 3.2a4.2 4.2 0 1 1 0 8.4 4.2 4.2 0 0 1 0-8.4Zm0 1.8a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8Zm4.4-2.2a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
+            </svg>
+          </a>
+
+        </div>
+        <div class="language-switch" aria-label="Language switch">
+          <button type="button" data-lang="ro" class="is-active">RO</button>
+          <button type="button" data-lang="ru">RU</button>
+        </div>
+        <button class="header-cta" type="button" data-open-form data-i18n="common.offer">Oferta</button>
+      </div>
     </header>
 
     <main id="top">
-      <section class="hero" aria-label="Panouri sandwich in stoc">
+      <section class="hero hero--commercial" aria-label="Panouri sandwich in stoc">
         <div class="hero__media" aria-hidden="true"></div>
         <div class="hero__overlay" aria-hidden="true"></div>
-        <div class="hero__inner">
+        <div class="hero__inner hero__inner--split">
           <div class="hero__copy">
-            <p class="eyebrow">Depozit in Balti / disponibil acum</p>
-            <h1>Panouri sandwich in stoc, fara asteptare</h1>
-            <p class="lead">
-              Ridici rapid cantitatea necesara din mun. Balti, str. Lev Dovator 1.
-              Te ajutam cu selectarea panourilor pentru pereti, acoperis si spatii industriale.
+            <p class="eyebrow" data-i18n="hero.kicker">Panouri sandwich / depozit in Balti</p>
+            <h1 data-i18n="hero.title">Panouri sandwich in stoc pentru pereti si acoperis</h1>
+            <p class="lead" data-i18n="hero.text">
+              Spui tipul panoului, grosimea si cantitatea. Verificam disponibilitatea,
+              calculam pretul si rezervam materialul pentru ridicare din depozit sau livrare.
             </p>
+            <ul class="hero-badges" aria-label="Avantaje rapide">
+              <li data-i18n="hero.badge1">Stoc in Balti</li>
+              <li data-i18n="hero.badge2">Oferta dupa cantitate</li>
+              <li data-i18n="hero.badge3">Consultatie tehnica</li>
+            </ul>
             <div class="actions">
-              <button class="button button--primary" type="button" data-open-form>Cere oferta de pret</button>
-              <a class="button button--outline" href="tel:+37379155791">Suna acum</a>
+              <button class="button button--primary" type="button" data-open-form data-i18n="hero.cta">Cere oferta gratuita</button>
+              <a class="button button--outline" href="#estimate" data-i18n="hero.calc">Calculeaza cererea</a>
+              <a class="button button--outline" href="tel:+37379155791" data-i18n="common.callNow">Suna acum</a>
             </div>
             <dl class="hero-facts">
               <div>
-                <dt>Stoc</dt>
-                <dd>panouri disponibile local</dd>
+                <dt data-i18n="hero.fact1Title">Stoc local</dt>
+                <dd data-i18n="hero.fact1Text">material disponibil in Balti</dd>
               </div>
               <div>
-                <dt>Rapid</dt>
-                <dd>rezervare dupa apel</dd>
+                <dt data-i18n="hero.fact2Title">Oferta rapida</dt>
+                <dd data-i18n="hero.fact2Text">pret dupa parametri reali</dd>
               </div>
               <div>
-                <dt>Balti</dt>
-                <dd>str. Lev Dovator 1</dd>
+                <dt data-i18n="hero.fact3Title">Rezervare</dt>
+                <dd data-i18n="hero.fact3Text">dupa confirmarea cantitatii</dd>
               </div>
             </dl>
+          </div>
+          <aside class="hero-panel" aria-label="Cerere rapida">
+            <h2 data-i18n="quick.title">Ai nevoie de pret?</h2>
+            <p data-i18n="quick.text">Trimite cantitatea aproximativa si revenim cu disponibilitatea.</p>
+            <form class="quick-form" data-lead-form>
+              <input name="name" type="text" placeholder="Nume" required autocomplete="name" data-i18n-placeholder="form.name">
+              <input name="phone" type="tel" placeholder="+373 00 00 00 00" required autocomplete="tel">
+              <input name="quantity" type="text" placeholder="Cantitate, ex. 250 m2" data-i18n-placeholder="form.quantity">
+              <input class="hp-field" name="website" type="text" tabindex="-1" autocomplete="off">
+              <input name="source" type="hidden" value="hero">
+              <button class="button button--form" type="submit" data-i18n="form.submit">Trimite cererea</button>
+              <p class="form-status" aria-live="polite"></p>
+            </form>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section section--light stats-band" aria-label="Indicatori TEHNOFASAD">
+        <div class="section__inner stats-grid">
+          <div>
+            <strong>Balti</strong>
+            <span>depozit si ridicare locala</span>
+          </div>
+          <div>
+            <strong>Perete</strong>
+            <span>panouri pentru hale si depozite</span>
+          </div>
+          <div>
+            <strong>Acoperis</strong>
+            <span>panouri pentru inchideri rapide</span>
+          </div>
+          <div>
+            <strong>Oferta</strong>
+            <span>calcul dupa stoc si cantitate</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="products">
+        <div class="section__inner">
+          <div class="section-heading">
+            <p class="section-kicker">Produse</p>
+            <h2>Gama principala pentru constructii comerciale si industriale</h2>
+            <p class="section-text">
+              Clientul vede imediat ce poate comanda, ce date trebuie sa trimita si cum
+              ajunge la oferta. Accentul ramane pe disponibilitate si raspuns rapid.
+            </p>
+          </div>
+          <div class="product-cards">
+            <article class="product-card">
+              <span>01</span>
+              <h3>Panouri sandwich</h3>
+              <p>Categoria principala pentru inchideri rapide, izolatie eficienta si proiecte industriale.</p>
+              <button type="button" data-open-form>Solicita pret</button>
+            </article>
+            <article class="product-card">
+              <span>02</span>
+              <h3>Panouri sandwich de perete</h3>
+              <p>Pentru hale, depozite, spatii comerciale, camere frigorifice, anexe si constructii tehnice.</p>
+              <button type="button" data-open-form>Solicita pret</button>
+            </article>
+            <article class="product-card">
+              <span>03</span>
+              <h3>Panouri sandwich de acoperis</h3>
+              <p>Pentru acoperisuri industriale si comerciale, cu montaj rapid si izolatie eficienta.</p>
+              <button type="button" data-open-form>Solicita pret</button>
+            </article>
+            <article class="product-card">
+              <span>04</span>
+              <h3>Elemente si accesorii</h3>
+              <p>Profile, elemente de inchidere, fixare si consultatie pentru completarea comenzii.</p>
+              <button type="button" data-open-form>Solicita pret</button>
+            </article>
+            <article class="product-card">
+              <span>05</span>
+              <h3>Tigla metalica</h3>
+              <p>Solutie pentru acoperisuri rezidentiale si comerciale, cu profil metalic durabil.</p>
+              <button type="button" data-open-form>Solicita pret</button>
+            </article>
+            <article class="product-card">
+              <span>06</span>
+              <h3>Tigla metalica modulara</h3>
+              <p>Module usor de transportat si montat, potrivite pentru acoperisuri cu geometrie variata.</p>
+              <button type="button" data-open-form>Solicita pret</button>
+            </article>
+            <article class="product-card">
+              <span class="product-card__number">07 <em>NOU</em></span>
+              <h3>Tigla bituminoasa</h3>
+              <p>Acoperire flexibila pentru proiecte rezidentiale, mansarde si acoperisuri complexe.</p>
+              <button type="button" data-open-form>Solicita pret</button>
+            </article>
+            <article class="product-card">
+              <span>08</span>
+              <h3>Tabla profilata</h3>
+              <p>Pentru acoperisuri, garduri, fatade si inchideri tehnice cu montaj eficient.</p>
+              <button type="button" data-open-form>Solicita pret</button>
+            </article>
+            <article class="product-card">
+              <span>09</span>
+              <h3>Sisteme pluviale</h3>
+              <p>Jgheaburi, burlane si elemente pentru evacuarea corecta a apei de pe acoperis.</p>
+              <button type="button" data-open-form>Solicita pret</button>
+            </article>
+            <article class="product-card">
+              <span>10</span>
+              <h3>Accesorii pentru acoperis</h3>
+              <p>Coame, sorturi, dolii, elemente de margine, fixare si completare pentru montaj.</p>
+              <button type="button" data-open-form>Solicita pret</button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--production" id="about">
+        <div class="section__inner about-layout">
+          <div>
+            <p class="section-kicker">Despre noi</p>
+            <h2>TEHNOFASAD lucreaza cu clienti care au nevoie de material clar, rapid si calculat corect</h2>
+            <p class="section-text">
+              Suntem concentrati pe panouri sandwich pentru proiecte comerciale, industriale
+              si agricole. Rolul nostru este sa reducem timpul dintre cerere si material:
+              verificam disponibilitatea, explicam variantele si pregatim oferta dupa
+              parametrii reali ai comenzii.
+            </p>
+          </div>
+          <div class="about-points">
+            <article>
+              <strong>Depozit local</strong>
+              <span>Balti, str. Lev Dovator 1</span>
+            </article>
+            <article>
+              <strong>Focus pe panouri</strong>
+              <span>perete, acoperis si accesorii</span>
+            </article>
+            <article>
+              <strong>Oferta practica</strong>
+              <span>calcul dupa grosime, cantitate si stoc</span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="production">
+        <div class="section__inner production-layout">
+          <div class="section-heading">
+            <p class="section-kicker">Productie si produse</p>
+            <h2>Parametrii pe care ii discutam inainte de rezervare</h2>
+          </div>
+          <div class="production-grid">
+            <article>
+              <h3>Destinatie</h3>
+              <p>Pereti exteriori, compartimentari, acoperisuri, depozite si hale.</p>
+            </article>
+            <article>
+              <h3>Grosime</h3>
+              <p>Alegerea grosimii depinde de izolatie, destinatie si buget.</p>
+            </article>
+            <article>
+              <h3>Cantitate</h3>
+              <p>Calculam oferta dupa m2 si disponibilitatea lotului.</p>
+            </article>
+            <article>
+              <h3>Culoare si profil</h3>
+              <p>Confirmam variantele disponibile in stoc la momentul cererii.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--light" id="stock">
+        <div class="section__inner stock-layout">
+          <div>
+            <p class="section-kicker">Stoc si parametri</p>
+            <h2>Ce date ne ajuta sa calculam corect oferta</h2>
+            <p class="section-text">
+              Pretul final depinde de tipul panoului, grosime, cantitate si disponibilitatea
+              lotului. De aceea cererea este scurta, dar orientata pe informatia care conteaza.
+            </p>
+          </div>
+          <div class="stock-table" role="table" aria-label="Date necesare pentru oferta">
+            <div role="row">
+              <span role="cell">Tip panou</span>
+              <strong role="cell">perete / acoperis</strong>
+            </div>
+            <div role="row">
+              <span role="cell">Grosime</span>
+              <strong role="cell">40-100 mm sau alta</strong>
+            </div>
+            <div role="row">
+              <span role="cell">Cantitate</span>
+              <strong role="cell">m2 aproximativ</strong>
+            </div>
+            <div role="row">
+              <span role="cell">Logistica</span>
+              <strong role="cell">ridicare / livrare</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--estimate" id="estimate">
+        <div class="section__inner estimate-layout">
+          <div>
+            <p class="section-kicker">Configurator cerere</p>
+            <h2>Configureaza rapid materialul si trimite datele pentru oferta</h2>
+            <p class="section-text">
+              Pentru TEHNOFASAD configuratorul este orientat pe decizie rapida: alegi categoria,
+              grosimea, cantitatea si logistica. Specialistul verifica stocul si pregateste
+              oferta pe scenariul real al comenzii.
+            </p>
+            <div class="config-steps">
+              <div>
+                <span>1</span>
+                <strong>Alegi materialul</strong>
+                <p>Panouri sandwich, tigla, tabla profilata sau sistem pluvial.</p>
+              </div>
+              <div>
+                <span>2</span>
+                <strong>Adaugi parametrii</strong>
+                <p>Grosime, cantitate, localitate si observatii utile.</p>
+              </div>
+              <div>
+                <span>3</span>
+                <strong>Primim cererea</strong>
+                <p>Revenim cu disponibilitatea si oferta potrivita.</p>
+              </div>
+            </div>
+          </div>
+          <form class="estimator-form" data-lead-form>
+            <label>
+              <span>Material</span>
+              <select name="panelType" required>
+                <option value="">Alege materialul</option>
+                <option>Panouri sandwich</option>
+                <option>Panou de perete</option>
+                <option>Panou de acoperis</option>
+                <option>Tigla metalica</option>
+                <option>Tigla metalica modulara</option>
+                <option>Tigla bituminoasa</option>
+                <option>Tabla profilata</option>
+                <option>Sistem pluvial</option>
+                <option>Nu stiu, am nevoie de consultatie</option>
+              </select>
+            </label>
+            <label>
+              <span>Grosime</span>
+              <select name="thickness">
+                <option value="">Alege grosimea</option>
+                <option>40 mm</option>
+                <option>50 mm</option>
+                <option>60 mm</option>
+                <option>80 mm</option>
+                <option>100 mm</option>
+                <option>Alta grosime</option>
+              </select>
+            </label>
+            <label>
+              <span>Cantitate</span>
+              <input name="quantity" type="text" placeholder="ex. 250 m2" required>
+            </label>
+            <label>
+              <span>Localitate</span>
+              <input name="location" type="text" placeholder="ex. Balti">
+            </label>
+            <label>
+              <span>Telefon</span>
+              <input name="phone" type="tel" placeholder="+373 00 00 00 00" required autocomplete="tel">
+            </label>
+            <input class="hp-field" name="website" type="text" tabindex="-1" autocomplete="off">
+            <input name="source" type="hidden" value="calculator">
+            <button class="button button--form" type="submit">Cere estimarea</button>
+            <p class="form-status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="section section--roof" id="roof-3d">
+        <div class="section__inner roof-layout">
+          <div class="roof-copy">
+            <p class="section-kicker">3D calculator acoperis</p>
+            <h2>Modeleaza acoperisul si estimeaza suprafata materialului</h2>
+            <p class="section-text">
+              Alege forma casei, ajusteaza volumetria, selecteaza materialul si activeaza
+              scurgerea. Configuratorul estimeaza suprafata si trimite datele specialistului.
+            </p>
+            <div class="roof-results" aria-live="polite">
+              <div>
+                <span>Suprafata acoperis</span>
+                <strong id="roof-area">0 m2</strong>
+              </div>
+              <div>
+                <span>Cu rezerva</span>
+                <strong id="roof-area-reserve">0 m2</strong>
+              </div>
+              <div>
+                <span>Unghi aproximativ</span>
+                <strong id="roof-angle">0°</strong>
+              </div>
+              <div>
+                <span>Scurgere</span>
+                <strong id="roof-drainage">0 ml</strong>
+              </div>
+            </div>
+          </div>
+          <div class="roof-tool">
+            <div class="roof-viewer" id="roof-viewer">
+              <canvas id="roof-canvas" aria-label="Model 3D acoperis"></canvas>
+            </div>
+            <form class="roof-form" id="roof-form">
+              <details class="cfg-step" open>
+                <summary>1. Forma acoperisului</summary>
+                <fieldset class="roof-form__wide">
+                  <div class="roof-choice-grid">
+                    <label>
+                      <input type="radio" name="shape" value="gable" checked>
+                      <span>Casa simpla - 2 pante</span>
+                    </label>
+                    <label>
+                      <input type="radio" name="shape" value="hip">
+                      <span>Casa simpla - 4 pante</span>
+                    </label>
+                    <label>
+                      <input type="radio" name="shape" value="l">
+                      <span>Casa in L</span>
+                    </label>
+                    <label>
+                      <input type="radio" name="shape" value="t">
+                      <span>Casa in T</span>
+                    </label>
+                  </div>
+                </fieldset>
+                <button type="button" class="button button--step" data-next-step>Continuă</button>
+              </details>
+              <details class="cfg-step">
+                <summary>2. Ajustează Volumetria</summary>
+                <div class="cfg-step__inner">
+                  <label class="range-label">
+                    <div class="range-header">
+                      <span>Lungime corp principal</span>
+                      <span class="range-value" id="val-length">12 m</span>
+                    </div>
+                    <input name="length" type="range" min="3" max="30" step="0.5" value="12">
+                  </label>
+                  <label class="range-label">
+                    <div class="range-header">
+                      <span>Latime corp principal</span>
+                      <span class="range-value" id="val-width">8 m</span>
+                    </div>
+                    <input name="width" type="range" min="3" max="20" step="0.5" value="8">
+                  </label>
+                  <label class="range-label">
+                    <div class="range-header">
+                      <span>Lungime aripa</span>
+                      <span class="range-value" id="val-wingLength">7 m</span>
+                    </div>
+                    <input name="wingLength" type="range" min="2" max="20" step="0.5" value="7">
+                  </label>
+                  <label class="range-label">
+                    <div class="range-header">
+                      <span>Latime aripa</span>
+                      <span class="range-value" id="val-wingWidth">4 m</span>
+                    </div>
+                    <input name="wingWidth" type="range" min="2" max="15" step="0.5" value="4">
+                  </label>
+                  <label class="range-label">
+                    <div class="range-header">
+                      <span>Inaltime coama</span>
+                      <span class="range-value" id="val-height">2.5 m</span>
+                    </div>
+                    <input name="height" type="range" min="0.5" max="8" step="0.1" value="2.5">
+                  </label>
+                  <label class="range-label">
+                    <div class="range-header">
+                      <span>Streasina</span>
+                      <span class="range-value" id="val-overhang">0.4 m</span>
+                    </div>
+                    <input name="overhang" type="range" min="0" max="1.5" step="0.1" value="0.4">
+                  </label>
+                  <label class="range-label">
+                    <div class="range-header">
+                      <span>Rezerva material</span>
+                      <span class="range-value" id="val-reserve">10 %</span>
+                    </div>
+                    <input name="reserve" type="range" min="0" max="25" step="1" value="10">
+                  </label>
+                  <button type="button" class="button button--step" data-next-step>Continuă</button>
+                </div>
+              </details>
+              <details class="cfg-step">
+                <summary>3. Materialul</summary>
+                <div class="cfg-step__inner">
+                  <label>
+                    <select name="material">
+                      <option>Tigla metalica</option>
+                      <option>Tigla metalica modulara</option>
+                      <option>Tigla bituminoasa</option>
+                      <option>Tabla profilata</option>
+                      <option>Panouri sandwich acoperis</option>
+                    </select>
+                  </label>
+                  <button type="button" class="button button--step" data-next-step>Continuă</button>
+                </div>
+              </details>
+              <details class="cfg-step">
+                <summary>4. Sistem de scurgere</summary>
+                <div class="cfg-step__inner">
+                  <label>
+                    <select name="drainage">
+                      <option value="none">Pana ce nu</option>
+                      <option value="eaves">Sandrama / streasina</option>
+                      <option value="drainage">Scurgere</option>
+                      <option value="full">Sandrama + scurgere</option>
+                    </select>
+                  </label>
+                </div>
+              </details>
+              <div class="roof-pricing roof-form__wide">
+                <div>
+                  <span>Standard</span>
+                  <strong id="roof-standard">la cerere</strong>
+                </div>
+                <div>
+                  <span>Premium</span>
+                  <strong id="roof-premium">la cerere</strong>
+                </div>
+                <div>
+                  <span>VIP</span>
+                  <strong id="roof-vip">la cerere</strong>
+                </div>
+              </div>
+              <button class="button button--form" type="button" id="roof-send">Trimite calculul</button>
+            </form>
           </div>
         </div>
       </section>
 
       <section class="section section--light" id="benefits">
         <div class="section__inner">
-          <div class="section-heading">
+          <div class="section-heading reveal">
             <p class="section-kicker">De ce TEHNOFASAD</p>
-            <h2>Mai putina asteptare, mai multa claritate la comanda</h2>
+            <h2>Avantaje clare pentru cei care au nevoie de material rapid</h2>
           </div>
           <div class="benefit-grid">
-            <article class="card">
+            <article class="card reveal" style="transition-delay: 0.1s">
               <span class="card__icon">01</span>
-              <h3>Disponibil din stoc</h3>
-              <p>Nu depinzi de termen lung de productie. Verificam cantitatea si rezervam materialul necesar.</p>
+              <h3>Stoc in Balti</h3>
+              <p>Verificam disponibilitatea si rezervam cantitatea necesara pentru client.</p>
             </article>
-            <article class="card">
+            <article class="card reveal" style="transition-delay: 0.2s">
               <span class="card__icon">02</span>
-              <h3>Consultatie rapida</h3>
-              <p>Spui destinatia, dimensiunile si cantitatea. Te ghidam catre varianta potrivita.</p>
+              <h3>Consultatie tehnica</h3>
+              <p>Te ajutam sa alegi panoul potrivit dupa destinatie, grosime si cantitate.</p>
             </article>
-            <article class="card">
+            <article class="card reveal" style="transition-delay: 0.3s">
               <span class="card__icon">03</span>
-              <h3>Depozit in Balti</h3>
-              <p>Adresa clara pentru ridicare: mun. Balti, str. Lev Dovator 1.</p>
+              <h3>Oferta transparenta</h3>
+              <p>Calculam pretul dupa parametri reali, nu dupa promisiuni generale.</p>
             </article>
-            <article class="card">
+            <article class="card reveal" style="transition-delay: 0.4s">
               <span class="card__icon">04</span>
-              <h3>Oferta pe masura</h3>
-              <p>Calculam pretul dupa tipul panoului, grosime, cantitate si disponibilitate.</p>
+              <h3>Ridicare rapida</h3>
+              <p>Adresa depozitului este clara: mun. Balti, str. Lev Dovator 1.</p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section" id="products">
-        <div class="section__inner product-layout">
-          <div>
-            <p class="section-kicker">Assortiment</p>
-            <h2>Panouri pentru constructii comerciale, agricole si industriale</h2>
+      <section class="section" id="portfolio">
+        <div class="section__inner">
+          <div class="section-heading reveal">
+            <p class="section-kicker">Portofoliu</p>
+            <h2>Tipuri de proiecte pentru care livram materiale</h2>
             <p class="section-text">
-              Pagina trebuie sa raspunda imediat la intrebarile clientului: ce gaseste in stoc,
-              cum afla pretul si cum poate rezerva materialul. Am grupat oferta in trei directii
-              usor de scanat.
+              Prezentam categoriile principale de lucrari pentru care clientii solicita
+              panouri si materiale de acoperis. Imaginile reale pot fi adaugate ulterior
+              cand alegem portofoliul final.
             </p>
           </div>
-          <div class="product-list">
-            <article>
-              <h3>Panouri de perete</h3>
-              <p>Pentru hale, depozite, spatii comerciale si anexe tehnice.</p>
+          <div class="portfolio-filters reveal" aria-label="Categorii portofoliu">
+            <button class="active" data-filter="all">Toate</button>
+            <button data-filter="sandwich">Panouri sandwich</button>
+            <button data-filter="acoperis">Acoperisuri</button>
+            <button data-filter="hala">Hale industriale</button>
+          </div>
+          <div class="portfolio-grid">
+            <article class="portfolio-item reveal" data-category="hala sandwich" style="transition-delay: 0.1s">
+              <div class="portfolio-image portfolio-image--one">
+                <div class="portfolio-badges">
+                  <span class="badge badge--dark">1200 m²</span>
+                  <span class="badge badge--accent">Hala de producere</span>
+                </div>
+              </div>
+              <h3>Hale si spatii industriale</h3>
+              <p>Panouri sandwich pentru inchideri rapide, izolatie si aspect curat.</p>
             </article>
-            <article>
-              <h3>Panouri de acoperis</h3>
-              <p>Pentru inchideri rapide, rezistenta si montaj eficient.</p>
+            <article class="portfolio-item reveal" data-category="acoperis" style="transition-delay: 0.2s">
+              <div class="portfolio-image portfolio-image--two">
+                <div class="portfolio-badges">
+                  <span class="badge badge--dark">240 m²</span>
+                  <span class="badge badge--accent">Tigla modulara</span>
+                </div>
+              </div>
+              <h3>Acoperisuri rezidentiale</h3>
+              <p>Tigla metalica, tabla profilata si accesorii pentru lucrari complete.</p>
             </article>
-            <article>
-              <h3>Accesorii si consultatie</h3>
-              <p>Ajutor la calcul, rezervare si planificarea ridicarii din depozit.</p>
+            <article class="portfolio-item reveal" data-category="hala sandwich" style="transition-delay: 0.3s">
+              <div class="portfolio-image portfolio-image--three">
+                <div class="portfolio-badges">
+                  <span class="badge badge--dark">850 m²</span>
+                  <span class="badge badge--accent">Depozit logistic</span>
+                </div>
+              </div>
+              <h3>Depozite si constructii agricole</h3>
+              <p>Materiale rezistente pentru proiecte unde conteaza termenul si bugetul.</p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section section--light" id="process">
+      <section class="section" id="process">
         <div class="section__inner">
-          <div class="section-heading">
-            <p class="section-kicker">Cum comanzi</p>
-            <h2>Proces simplu pentru clientii care au nevoie rapid de material</h2>
+          <div class="section-heading reveal">
+            <p class="section-kicker">Cum lucram</p>
+            <h2>De la cerere la rezervarea panourilor</h2>
           </div>
-          <ol class="steps">
+          <ol class="steps steps--four reveal">
             <li>
               <span>1</span>
-              <h3>Trimiti cererea</h3>
-              <p>Indici telefonul, cantitatea aproximativa si tipul de panou necesar.</p>
+              <h3>Trimiti datele</h3>
+              <p>Tip panou, grosime, cantitate si telefon.</p>
             </li>
             <li>
               <span>2</span>
-              <h3>Primesti oferta</h3>
-              <p>Confirmam disponibilitatea si pretul in functie de parametrii comenzii.</p>
+              <h3>Verificam stocul</h3>
+              <p>Confirmam disponibilitatea in depozit.</p>
             </li>
             <li>
               <span>3</span>
-              <h3>Rezervi si ridici</h3>
-              <p>Stabilim ora si ridici panourile din depozitul din Balti.</p>
+              <h3>Calculam oferta</h3>
+              <p>Pregatim pretul dupa cantitate si parametri.</p>
+            </li>
+            <li>
+              <span>4</span>
+              <h3>Rezervi materialul</h3>
+              <p>Stabilim ridicarea sau urmatorul pas logistic.</p>
             </li>
           </ol>
         </div>
       </section>
 
+      <section class="section section--reviews" id="reviews">
+        <div class="section__inner reviews-layout">
+          <div class="reveal">
+            <p class="section-kicker">Recenzii</p>
+            <h2>Ce vrem sa simta clientul dupa prima discutie</h2>
+            <p class="section-text">
+              Pana adaugam recenzii reale, folosim aceste mesaje ca directie de comunicare:
+              claritate, raspuns rapid si oferta concreta.
+            </p>
+          </div>
+          <div class="reviews-grid">
+            <article class="review-card reveal" style="transition-delay: 0.1s">
+              <div class="review-stars">★★★★★</div>
+              <p>"Am primit repede confirmarea pentru cantitate si am stiut exact ce urmeaza. Livrarea s-a facut a doua zi."</p>
+              <div class="review-author">
+                <strong>Ion Rusu</strong>
+                <span>Google Review</span>
+              </div>
+            </article>
+            <article class="review-card">
+              <div class="review-stars">★★★★★</div>
+              <p>"Oferta a fost explicata clar pe grosime, cantitate si disponibilitate. Fara costuri ascunse. Recomand!"</p>
+              <div class="review-author">
+                <strong>Alexandru Cebotari</strong>
+                <span>Google Review</span>
+              </div>
+            </article>
+            <article class="review-card">
+              <div class="review-stars">★★★★★</div>
+              <p>"Adresa depozitului si pasii de rezervare au fost clari de la inceput. Marfa este in stoc real."</p>
+              <div class="review-author">
+                <strong>Vadim I.</strong>
+                <span>Google Review</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--light" id="faq">
+        <div class="section__inner faq-layout">
+          <div>
+            <p class="section-kicker">Intrebari frecvente</p>
+            <h2>Raspunsuri rapide inainte de apel</h2>
+          </div>
+          <div class="faq-list">
+            <details>
+              <summary>Panourile sunt disponibile imediat?</summary>
+              <p>Disponibilitatea se confirma dupa tip, grosime si cantitate. Daca lotul este in stoc, il putem rezerva.</p>
+            </details>
+            <details>
+              <summary>Pot primi oferta fara proiect complet?</summary>
+              <p>Da. Pentru o estimare initiala este suficient tipul panoului, cantitatea aproximativa si telefonul.</p>
+            </details>
+            <details>
+              <summary>Unde se ridica materialul?</summary>
+              <p>Depozitul este in mun. Balti, str. Lev Dovator 1. Pentru alte localitati discutam separat logistica.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
       <section class="cta-band">
         <div>
-          <p class="section-kicker">Ai nevoie de pret?</p>
-          <h2>Trimite cantitatea si revenim cu oferta.</h2>
+          <p class="section-kicker">Ai nevoie de panouri?</p>
+          <h2>Trimite cererea si verificam stocul.</h2>
         </div>
         <button class="button button--primary" type="button" data-open-form>Cere oferta</button>
       </section>
@@ -170,6 +770,18 @@
               <span>Telefon</span>
               <strong>+373 791 55 791</strong>
             </a>
+            <a class="contact-card" href="mailto:info@tehnofasad.md">
+              <span>Email</span>
+              <strong>info@tehnofasad.md</strong>
+            </a>
+            <div class="contact-card">
+              <span>Messenger</span>
+              <div class="messenger-links messenger-links--contact">
+                <a href="https://wa.me/37379155791" target="_blank" rel="noreferrer">WhatsApp</a>
+                <a href="viber://chat?number=%2B37379155791">Viber</a>
+                <a href="https://t.me/+37379155791" target="_blank" rel="noreferrer">Telegram</a>
+              </div>
+            </div>
             <button class="contact-card contact-card--button" type="button" data-open-form>
               <span>Oferta</span>
               <strong>Completeaza formularul</strong>
@@ -184,17 +796,96 @@
     </main>
 
     <footer class="site-footer">
-      <span>TEHNOFASAD S.R.L.</span>
-      <nav aria-label="Legal">
-        <a href="https://tehnofasad.md/legal-notice">Legal notice</a>
-        <a href="https://tehnofasad.md/privacy">Privacy</a>
-      </nav>
+      <div class="footer-grid">
+        <div>
+          <strong>TEHNOFASAD S.R.L.</strong>
+          <p>Panouri sandwich si materiale pentru acoperisuri, cu stoc si consultatie in Balti.</p>
+        </div>
+        <nav aria-label="Produse">
+          <strong>Produse</strong>
+          <a href="#products">Panouri sandwich</a>
+          <a href="#products">Tigla metalica</a>
+          <a href="#products">Tabla profilata</a>
+          <a href="#products">Sisteme pluviale</a>
+        </nav>
+        <nav aria-label="Linkuri utile">
+          <strong>Linkuri utile</strong>
+          <a href="#about">Despre noi</a>
+          <a href="#estimate">Calculator cerere</a>
+          <a href="#faq">Intrebari frecvente</a>
+          <a href="#contacts">Contacte</a>
+        </nav>
+        <div>
+          <strong>Contact</strong>
+          <p>mun. Balti, str. Lev Dovator 1<br>+373 791 55 791<br>info@tehnofasad.md</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© TEHNOFASAD S.R.L.</span>
+        <nav aria-label="Legal">
+          <a href="https://tehnofasad.md/legal-notice">Legal notice</a>
+          <a href="https://tehnofasad.md/privacy">Privacy</a>
+        </nav>
+      </div>
     </footer>
 
     <div class="mobile-cta" aria-label="Actiuni rapide">
       <a href="tel:+37379155791">Suna</a>
+      <a href="https://wa.me/37379155791" target="_blank" rel="noreferrer">WhatsApp</a>
       <button type="button" data-open-form>Oferta</button>
     </div>
+
+    <div class="floating-messengers" aria-label="Messenger rapid">
+      <div class="floating-messengers__group">
+        <a class="floating-messengers__link floating-messengers__link--telegram" href="https://t.me/+37379155791" target="_blank" rel="noreferrer" aria-label="Telegram">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21.9 4.2 18.7 19c-.2 1-.8 1.2-1.6.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.4-5 9.2-8.3c.4-.4-.1-.6-.6-.2l-11.4 7.1-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.8 2.2c.9-.3 1.6.2 1.1 2Z"/>
+          </svg>
+          <span>Telegram</span>
+        </a>
+        <a class="floating-messengers__link floating-messengers__link--whatsapp" href="https://wa.me/37379155791" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2.1a9.8 9.8 0 0 0-8.4 14.9L2.4 21.5l4.6-1.2A9.8 9.8 0 1 0 12 2.1Zm0 17.7a7.8 7.8 0 0 1-4-1.1l-.3-.2-2.7.7.7-2.6-.2-.3A7.8 7.8 0 1 1 12 19.8Zm4.3-5.8c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.4 6.4 0 0 1-1.9-1.2 7 7 0 0 1-1.3-1.7c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.7-1.6c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.1s.9 2.4 1 2.5c.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.1 1.6.1.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1 0-.2-.2-.3-.4-.4Z"/>
+          </svg>
+          <span>WhatsApp</span>
+        </a>
+        <a class="floating-messengers__link floating-messengers__link--viber" href="viber://chat?number=%2B37379155791" aria-label="Viber">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18.3 4.4C16.7 3 14.5 2.4 12 2.4S7.3 3 5.7 4.4C4.2 5.7 3.4 7.7 3.4 10.1c0 3 .9 5.1 2.8 6.5v3.5c0 .6.7.9 1.1.5l3-2.8H12c2.5 0 4.7-.6 6.3-2 1.5-1.3 2.3-3.3 2.3-5.7s-.8-4.4-2.3-5.7ZM12 16h-2.1l-2 1.9v-2.4l-.5-.3c-1.5-1-2.2-2.6-2.2-5.1 0-1.9.6-3.4 1.7-4.4 1.2-1 2.9-1.5 5.1-1.5s3.9.5 5.1 1.5c1.1 1 1.7 2.5 1.7 4.4s-.6 3.4-1.7 4.4C15.9 15.5 14.2 16 12 16Zm4.3-3.1c-.2-.1-1.2-.6-1.4-.7-.2-.1-.4-.1-.5.1l-.6.7c-.1.2-.3.2-.5.1-1.2-.6-2.2-1.5-2.8-2.8-.1-.2-.1-.4.1-.5l.6-.6c.2-.2.2-.3.1-.5l-.6-1.4c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.5.5-.7 1.1-.7 1.8 0 .9.4 1.8 1.2 2.9 1 1.4 2.2 2.4 3.8 3 .6.3 1.1.4 1.6.4.7 0 1.3-.3 1.7-.8.2-.2.3-.5.3-.7 0-.2-.2-.4-.5-.5Zm-2.8-6.2c1.5.3 2.4 1.2 2.6 2.7.1.3.3.5.6.5h.1c.3-.1.5-.3.5-.7-.4-2-1.6-3.3-3.6-3.7-.3-.1-.6.1-.7.5 0 .3.2.6.5.7Zm.3 1.6c.7.2 1.1.6 1.3 1.3.1.3.3.4.6.4h.1c.3-.1.5-.4.4-.7-.3-1.2-1-1.9-2.2-2.2-.3-.1-.6.1-.7.4-.1.4.1.7.5.8Z"/>
+          </svg>
+          <span>Viber</span>
+        </a>
+      </div>
+      <button class="floating-messengers__toggle" aria-label="Contactati-ne">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+      </button>
+    </div>
+
+    <section class="ai-chat" id="ai-chat" aria-label="AI consultant">
+      <button class="ai-chat__toggle" type="button" aria-expanded="false" aria-controls="ai-chat-panel">
+        <span>AI</span>
+      </button>
+      <div class="ai-chat__panel" id="ai-chat-panel" aria-hidden="true">
+        <header class="ai-chat__header">
+          <div>
+            <strong>TEHNOFASAD AI</strong>
+            <span>Consultant online</span>
+          </div>
+          <button class="ai-chat__close" type="button" aria-label="Inchide chatul">x</button>
+        </header>
+        <div class="ai-chat__messages" aria-live="polite">
+          <div class="ai-chat__message ai-chat__message--bot">
+            Buna ziua. Va pot ajuta cu panouri sandwich, acoperisuri, 3D calculator si cerere de oferta.
+          </div>
+        </div>
+        <form class="ai-chat__form">
+          <input name="message" type="text" autocomplete="off" placeholder="Scrieti intrebarea..." required>
+          <button type="submit">Trimite</button>
+        </form>
+      </div>
+    </section>
 
     <div class="modal" id="offer-modal" aria-hidden="true">
       <div class="modal__backdrop" data-close-form></div>
@@ -204,7 +895,7 @@
         <h2 id="form-title">Cerere oferta</h2>
         <p class="modal__intro">Lasati datele si cantitatea aproximativa. Revenim cu pretul si disponibilitatea.</p>
 
-        <form class="offer-form" action="#" method="post">
+        <form class="offer-form" data-lead-form>
           <label>
             <span>Nume</span>
             <input name="name" type="text" required autocomplete="name">
@@ -219,17 +910,22 @@
           </label>
           <label>
             <span>Comentariu</span>
-            <input name="comment" type="text" placeholder="perete, acoperis, grosime">
+            <textarea name="comment" rows="3" placeholder="perete, acoperis, grosime"></textarea>
           </label>
+          <input class="hp-field" name="website" type="text" tabindex="-1" autocomplete="off">
+          <input name="source" type="hidden" value="modal">
           <label class="checkbox">
             <input name="privacy" type="checkbox" required>
             <span>sunt de acord cu politica de confidentialitate</span>
           </label>
           <button class="button button--form" type="submit">Trimite cererea</button>
+          <p class="form-status" aria-live="polite"></p>
         </form>
       </section>
     </div>
 
-    <script src="script.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script defer src="script.js"></script>
+    <script defer src="roof-constructor.js"></script>
   </body>
 </html>
