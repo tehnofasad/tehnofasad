@@ -11,6 +11,7 @@ const aiChatClose = document.querySelector(".ai-chat__close");
 const aiChatPanel = document.querySelector(".ai-chat__panel");
 const aiChatMessages = document.querySelector(".ai-chat__messages");
 const aiChatForm = document.querySelector(".ai-chat__form");
+const aiQuickButtons = document.querySelectorAll("[data-ai-prompt]");
 const aiChatHistory = [];
 
 const i18n = {
@@ -315,6 +316,29 @@ function currentText(key) {
   return i18n[lang]?.[key] || i18n.ro[key];
 }
 
+function updateAiQuickMenu(lang) {
+  const roItems = [
+    ["Produse", "Ce produse aveti si pentru ce se folosesc?"],
+    ["Alegere material", "Ajuta-ma sa aleg materialul potrivit pentru acoperis."],
+    ["3D calculator", "Cum pot calcula acoperisul in 3D?"],
+    ["Oferta pret", "Vreau oferta de pret. Ce date trebuie sa trimit?"],
+    ["Contacte", "Care sunt telefonul, emailul si adresa TEHNOFASAD?"],
+  ];
+  const ruItems = [
+    ["Продукция", "Какая продукция есть и для чего она используется?"],
+    ["Выбор материала", "Помоги выбрать подходящий материал для крыши."],
+    ["3D расчет", "Как рассчитать крышу в 3D-конфигураторе?"],
+    ["Цена", "Хочу получить цену. Какие данные нужно отправить?"],
+    ["Контакты", "Какие телефон, email и адрес у TEHNOFASAD?"],
+  ];
+  const items = lang === "ru" ? ruItems : roItems;
+  aiQuickButtons.forEach((button, index) => {
+    if (!items[index]) return;
+    button.textContent = items[index][0];
+    button.dataset.aiPrompt = items[index][1];
+  });
+}
+
 function openForm() {
   if (!modal) {
     return;
@@ -400,10 +424,14 @@ leadForms.forEach((form) => {
 });
 
 langButtons.forEach((button) => {
-  button.addEventListener("click", () => applyLanguage(button.dataset.lang));
+  button.addEventListener("click", () => {
+    applyLanguage(button.dataset.lang);
+    updateAiQuickMenu(button.dataset.lang);
+  });
 });
 
 applyLanguage(localStorage.getItem("siteLang") || "ro");
+updateAiQuickMenu(localStorage.getItem("siteLang") || "ro");
 
 if (navToggle && mainNav) {
   navToggle.addEventListener("click", () => {
@@ -529,4 +557,11 @@ aiChatForm?.addEventListener("submit", (event) => {
   if (!text) return;
   input.value = "";
   sendAiChatMessage(text);
+});
+
+aiQuickButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setAiChatOpen(true);
+    sendAiChatMessage(button.dataset.aiPrompt);
+  });
 });

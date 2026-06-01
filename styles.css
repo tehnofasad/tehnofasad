@@ -1906,7 +1906,7 @@ h3 {
 .ai-chat__messages {
   display: grid;
   max-height: 360px;
-  min-height: 260px;
+  min-height: 230px;
   gap: 10px;
   overflow: auto;
   padding: 16px;
@@ -1936,6 +1936,30 @@ h3 {
   color: rgba(255, 255, 255, 0.7);
   background: transparent;
   font-size: 0.86rem;
+}
+
+.ai-chat__quick-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px;
+}
+
+.ai-chat__quick-menu button {
+  min-height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0 11px;
+  color: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.ai-chat__quick-menu button:hover {
+  border-color: rgba(223, 47, 47, 0.55);
+  background: rgba(223, 47, 47, 0.18);
 }
 
 .ai-chat__form {
