@@ -3,6 +3,7 @@ const fs = require("fs");
 const fsp = require("fs/promises");
 const path = require("path");
 const zlib = require("zlib");
+const crypto = require("crypto");
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
@@ -115,10 +116,158 @@ function sanitizeLead(rawLead) {
   return lead;
 }
 
+function toArray(value) {
+  return String(value || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function flattenParams(value, prefix, output = {}) {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => flattenParams(item, `${prefix}[${index}]`, output));
+    return output;
+  }
+
+  if (value && typeof value === "object") {
+    Object.keys(value)
+      .sort()
+      .forEach((key) => flattenParams(value[key], prefix ? `${prefix}[${key}]` : key, output));
+    return output;
+  }
+
+  if (value !== undefined && value !== null && value !== "") {
+    output[prefix] = String(value);
+  }
+
+  return output;
+}
+
+function encodeForm(params) {
+  return Object.keys(params)
+    .sort()
+    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key]).replace(/%20/g, "+")}`)
+    .join("&");
+}
+
+function createTeamSaleAuthHeader(method, params) {
+  const apiKey = process.env.TEAMSALE_API_KEY || process.env.ZADARMA_API_KEY;
+  const apiSecret = process.env.TEAMSALE_API_SECRET || process.env.ZADARMA_API_SECRET;
+
+  if (!apiKey || !apiSecret) return null;
+
+  const flatParams = flattenParams(params);
+  const paramsString = encodeForm(flatParams);
+  const md5 = crypto.createHash("md5").update(paramsString).digest("hex");
+  const signatureSource = `${method}${paramsString}${md5}`;
+  const signature = crypto.createHmac("sha1", apiSecret).update(signatureSource).digest("base64");
+  return `${apiKey}:${signature}`;
+}
+
+function buildTeamSaleLeadPayload(lead) {
+  const labels = toArray(process.env.TEAMSALE_LABEL_IDS).map((id) => ({ id }));
+  const utms = toArray(process.env.TEAMSALE_UTM_IDS).map((id) => ({ id }));
+  const contacts = [];
+
+  if (lead.email) {
+    contacts.push({ type: "email_work", value: lead.email });
+  }
+
+  if (lead.telegram) contacts.push({ type: "telegram", value: lead.telegram });
+  if (lead.viber) contacts.push({ type: "viber", value: lead.viber });
+  if (lead.whatsapp) contacts.push({ type: "whatsapp", value: lead.whatsapp });
+
+  const comment = [
+    lead.comment,
+    lead.quantity ? `Cantitate: ${lead.quantity}` : "",
+    lead.material ? `Material: ${lead.material}` : "",
+    lead.panelType ? `Tip: ${lead.panelType}` : "",
+    lead.thickness ? `Grosime: ${lead.thickness}` : "",
+    lead.location ? `Localitate: ${lead.location}` : "",
+    lead.source ? `Sursa: ${lead.source}` : "",
+  ].filter(Boolean).join("\n");
+
+  const crmLead = {
+    name: lead.name || `TEHNOFASAD lead ${lead.phone || ""}`.trim(),
+    comment,
+    city: lead.location || "",
+    website: "https://tehnofasad.md/",
+    lead_source: "form",
+    lead_status: process.env.TEAMSALE_LEAD_STATUS || "not_processed",
+    phones: lead.phone ? [{ type: "work", phone: lead.phone }] : [],
+    contacts,
+  };
+
+  if (process.env.TEAMSALE_RESPONSIBLE_USER_ID) {
+    crmLead.responsible_user_id = process.env.TEAMSALE_RESPONSIBLE_USER_ID;
+  }
+
+  if (labels.length) crmLead.labels = labels;
+  if (utms.length) crmLead.utms = utms;
+
+  return {
+    convert: "0",
+    lead: crmLead,
+  };
+}
+
+async function sendLeadToTeamSale(lead) {
+  const apiKey = process.env.TEAMSALE_API_KEY || process.env.ZADARMA_API_KEY;
+  const apiSecret = process.env.TEAMSALE_API_SECRET || process.env.ZADARMA_API_SECRET;
+  const apiBase = (process.env.TEAMSALE_API_BASE || "https://api.zadarma.com").replace(/\/$/, "");
+  const method = process.env.TEAMSALE_LEADS_METHOD || "/v1/zcrm/leads";
+
+  if (!apiKey || !apiSecret) {
+    return { skipped: true, reason: "TEAMSALE_API_KEY/TEAMSALE_API_SECRET are not configured" };
+  }
+
+  const payload = buildTeamSaleLeadPayload(lead);
+  const flatPayload = flattenParams(payload);
+  const body = encodeForm(flatPayload);
+  const authorization = createTeamSaleAuthHeader(method, payload);
+
+  if (!authorization) {
+    return { skipped: true, reason: "TeamSale authorization is not configured" };
+  }
+
+  const response = await fetch(`${apiBase}${method}`, {
+    method: "POST",
+    headers: {
+      Authorization: authorization,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body,
+  });
+
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (error) {
+    data = { raw: text };
+  }
+
+  if (!response.ok || data.status === "error") {
+    throw new Error(`TeamSale CRM error: ${JSON.stringify(data).slice(0, 500)}`);
+  }
+
+  return { ok: true, response: data };
+}
+
 async function saveLead(rawLead) {
   const lead = sanitizeLead(rawLead);
   await fsp.mkdir(DATA_DIR, { recursive: true });
   await fsp.appendFile(LEADS_FILE, `${JSON.stringify(lead)}\n`, "utf8");
+
+  try {
+    const crmResult = await sendLeadToTeamSale(lead);
+    if (!crmResult.skipped) {
+      await fsp.appendFile(path.join(DATA_DIR, "crm-sync.jsonl"), `${JSON.stringify({ createdAt: new Date().toISOString(), leadPhone: lead.phone || "", result: crmResult })}\n`, "utf8");
+    }
+  } catch (error) {
+    await fsp.appendFile(path.join(DATA_DIR, "crm-errors.jsonl"), `${JSON.stringify({ createdAt: new Date().toISOString(), leadPhone: lead.phone || "", error: error.message })}\n`, "utf8");
+  }
+
   return lead;
 }
 
