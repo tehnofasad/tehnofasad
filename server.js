@@ -482,7 +482,7 @@ function serveStatic(request, response) {
   });
 }
 
-const server = http.createServer((request, response) => {
+function handleRequest(request, response) {
   setSecurityHeaders(response);
 
   const requestUrl = new URL(request.url, `http://${request.headers.host}`);
@@ -509,8 +509,14 @@ const server = http.createServer((request, response) => {
 
   response.writeHead(405, { "Content-Type": "text/plain; charset=utf-8" });
   response.end("Method not allowed");
-});
+}
 
-server.listen(PORT, () => {
-  console.log(`TEHNOFASAD server running at http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  const server = http.createServer(handleRequest);
+
+  server.listen(PORT, () => {
+    console.log(`TEHNOFASAD server running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = handleRequest;
