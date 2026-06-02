@@ -318,18 +318,20 @@ function currentText(key) {
 
 function updateAiQuickMenu(lang) {
   const roItems = [
-    ["Produse", "Ce produse aveti si pentru ce se folosesc?"],
-    ["Alegere material", "Ajuta-ma sa aleg materialul potrivit pentru acoperis."],
-    ["3D calculator", "Cum pot calcula acoperisul in 3D?"],
-    ["Oferta pret", "Vreau oferta de pret. Ce date trebuie sa trimit?"],
-    ["Contacte", "Care sunt telefonul, emailul si adresa TEHNOFASAD?"],
+    ["Oferta panouri", "Vreau oferta pentru panouri sandwich. Ce date trebuie sa trimit?"],
+    ["Alegere panou", "Ajuta-ma sa aleg intre panou de perete si panou de acoperis."],
+    ["Grosime", "Ce grosime de panou sandwich imi recomanzi pentru proiect?"],
+    ["3D acoperis", "Cum pot calcula acoperisul in 3D si ce date sunt necesare?"],
+    ["Stoc si livrare", "Cum verificam disponibilitatea si livrarea materialelor?"],
+    ["Callback", "Vreau sa fiu sunat de un specialist TEHNOFASAD."],
   ];
   const ruItems = [
-    ["Продукция", "Какая продукция есть и для чего она используется?"],
-    ["Выбор материала", "Помоги выбрать подходящий материал для крыши."],
-    ["3D расчет", "Как рассчитать крышу в 3D-конфигураторе?"],
-    ["Цена", "Хочу получить цену. Какие данные нужно отправить?"],
-    ["Контакты", "Какие телефон, email и адрес у TEHNOFASAD?"],
+    ["Цена панелей", "Хочу получить предложение на сэндвич-панели. Какие данные нужно отправить?"],
+    ["Выбор панели", "Помоги выбрать между стеновой и кровельной сэндвич-панелью."],
+    ["Толщина", "Какую толщину сэндвич-панели выбрать для моего проекта?"],
+    ["3D крыша", "Как рассчитать крышу в 3D-конфигураторе и какие данные нужны?"],
+    ["Склад/доставка", "Как проверить наличие и доставку материалов?"],
+    ["Обратный звонок", "Хочу, чтобы специалист TEHNOFASAD мне перезвонил."],
   ];
   const items = lang === "ru" ? ruItems : roItems;
   aiQuickButtons.forEach((button, index) => {

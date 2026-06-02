@@ -290,23 +290,55 @@ function extractTextFromOpenAI(payload) {
 }
 
 function extractLeadFromMessage(message) {
-  const phoneMatch = String(message).match(/\+?\d[\d\s()-]{7,}\d/);
+  const text = String(message || "");
+  const lower = text.toLowerCase();
+  const phoneMatch = text.match(/\+?\d[\d\s()-]{7,}\d/);
   const phone = phoneMatch ? phoneMatch[0].trim() : "";
   if (!phone) return null;
+
+  const emailMatch = text.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i);
+  const quantityMatch = text.match(/(\d+(?:[.,]\d+)?)\s*(m2|m²|м2|м²|mp|m\.p\.|метр|metri)/i);
+  const thicknessMatch = text.match(/(\d{2,3})\s*(mm|мм|milimetri)/i);
+  const knownLocationMatch = text.match(/\b(Chisinau|Chișinău|Кишинев|Кишинёв|Balti|Bălți|Бельцы|Orhei|Оргеев|Ungheni|Унгены|Cahul|Кагул|Soroca|Сороки|Edinet|Единец)\b/i);
+  const locationPhraseMatch = text.match(/(?:город|localitate|localitatea|oras|oraș|in|în|в)\s+([A-Za-zА-Яа-яЁёĂăÂâÎîȘșȚț -]{3,40})/i);
+  const nameMatch = text.match(/(?:меня зовут|я\s+|numele meu este|ma numesc|mă numesc|nume)\s+([A-Za-zА-Яа-яЁёĂăÂâÎîȘșȚț -]{2,40})/i);
+
+  let material = "";
+  if (/sandwich|сэндвич|panou|panouri|панел/i.test(lower)) material = "sandwich panels";
+  if (/acoperis|acoperiș|кры|roof/i.test(lower)) material = material ? `${material}, roof` : "roof";
+  if (/perete|стен|wall/i.test(lower)) material = material ? `${material}, wall` : "wall";
+  if (/tigla|țigl|черепиц|metal tile/i.test(lower)) material = "metal tile";
+
   return {
-    name: "",
+    name: nameMatch ? nameMatch[1].trim() : "",
     phone,
-    comment: `AI chat lead: ${String(message).slice(0, 450)}`,
+    email: emailMatch ? emailMatch[0] : "",
+    material,
+    quantity: quantityMatch ? `${quantityMatch[1]} ${quantityMatch[2]}` : "",
+    thickness: thicknessMatch ? `${thicknessMatch[1]} ${thicknessMatch[2]}` : "",
+    location: knownLocationMatch ? knownLocationMatch[0] : (locationPhraseMatch ? locationPhraseMatch[1].trim() : ""),
+    comment: `AI chat lead: ${text.slice(0, 450)}`,
     source: "ai-chat",
   };
 }
 
 function fallbackAiReply(message, lang) {
-  const isRu = lang === "ru" || /[а-яё]/i.test(message);
+  const text = String(message || "");
+  const isRu = lang === "ru" || /[а-яё]/i.test(text);
   const extractedLead = extractLeadFromMessage(message);
-  const answer = isRu
-    ? "Я AI-консультант TEHNOFASAD. Могу помочь с сэндвич-панелями, кровлей, водостоками и расчетом через 3D-конфигуратор. Для точной цены напишите материал, количество м2, город и телефон."
-    : "Sunt consultantul AI TEHNOFASAD. Va pot ajuta cu panouri sandwich, acoperisuri, sisteme pluviale si calcul prin configuratorul 3D. Pentru pret exact trimiteti materialul, cantitatea m2, localitatea si telefonul.";
+  const wantsOffer = /(цена|стоим|заказ|заявк|позвон|оферт|pret|oferta|comand|sunati|apel|calcul)/i.test(text);
+  let answer;
+
+  if (extractedLead && wantsOffer) {
+    answer = isRu
+      ? "Принял данные для заявки. Специалист TEHNOFASAD проверит наличие, уточнит параметры и свяжется с вами. Если есть возможность, допишите тип панели, толщину, количество м2 и город."
+      : "Am preluat datele pentru cerere. Specialistul TEHNOFASAD va verifica disponibilitatea, va confirma parametrii si va va contacta. Daca puteti, scrieti tipul panoului, grosimea, cantitatea m2 si localitatea.";
+  } else {
+    answer = isRu
+      ? "Я AI-консультант TEHNOFASAD. Помогаю выбрать сэндвич-панели, кровельные материалы, водостоки и подготовить заявку. Для точного предложения напишите: тип материала, толщина, количество м2, город и телефон."
+      : "Sunt consultantul AI TEHNOFASAD. Va ajut sa alegeti panouri sandwich, materiale pentru acoperis, sisteme pluviale si sa pregatim cererea. Pentru oferta exacta scrieti: tipul materialului, grosimea, cantitatea m2, localitatea si telefonul.";
+  }
+
   return { answer, lead: extractedLead };
 }
 
@@ -334,16 +366,23 @@ async function callOpenAiAgent(messages, lang) {
   }
 
   const systemPrompt = [
-    "You are TEHNOFASAD AI, a website sales assistant for a Moldova company.",
-    "Reply in the user's language: Russian or Romanian.",
-    "Company: TEHNOFASAD S.R.L.",
-    "Phone: +373 791 55 791. Email: info@tehnofasad.md. Address: mun. Balti, str. Lev Dovator 1.",
-    "Products: sandwich panels, wall sandwich panels, roof sandwich panels, metal tile, modular metal tile, bituminous shingles, profiled sheet, drainage systems, roof accessories.",
-    "Do not invent exact stock or final prices. Say a specialist will confirm availability and price.",
-    "If the user wants an order, collect name, phone, material, quantity, city, comment.",
-    "Return ONLY JSON with keys: answer string, lead object or null.",
-    "lead fields: name, phone, email, material, quantity, location, comment, source. Set source to ai-chat.",
-    "Create lead only when a phone number is present and the user asks for price/order/callback.",
+    "You are TEHNOFASAD AI, a senior sales and technical consultant for a Moldova construction-materials company.",
+    "Primary goal: help the visitor choose the right product and convert serious requests into a clean CRM lead.",
+    "Reply in the user's language. Use Russian for Cyrillic/Russian messages and Romanian for Romanian messages.",
+    "Company facts: TEHNOFASAD S.R.L.; phone +373 791 55 791; email info@tehnofasad.md; address mun. Balti, str. Lev Dovator 1; website tehnofasad.md.",
+    "Products: sandwich panels for walls, sandwich panels for roofs, metal tile, modular metal tile, bituminous shingles, profiled sheet, drainage systems, roof accessories.",
+    "Strong consultation rules:",
+    "- For sandwich panels, ask/track purpose, panel type wall/roof, thickness, quantity in m2, color if mentioned, city, pickup/delivery, phone.",
+    "- For roofs, ask/track roof type, roof area or dimensions, material, drainage, city, phone. Mention that the 3D configurator can estimate roof area and drainage length.",
+    "- For price, stock, delivery, callback, order, reservation: collect phone and order parameters, then create a lead.",
+    "- Never invent exact prices, stock quantities, delivery price or final deadlines. Say a specialist confirms by real stock and parameters.",
+    "- Keep answers short, practical and sales-focused: 2-5 sentences unless the user asks for details.",
+    "- If data is missing, ask for the next 2-4 most important missing fields, not a long questionnaire.",
+    "- If the user already gave phone plus a buying intent, confirm that the request was accepted and say a specialist will contact them.",
+    "Return ONLY valid JSON, no markdown, no prose outside JSON.",
+    "JSON shape: {\"answer\":\"string\",\"lead\":null or {\"name\":\"\",\"phone\":\"\",\"email\":\"\",\"material\":\"\",\"quantity\":\"\",\"thickness\":\"\",\"location\":\"\",\"comment\":\"\",\"source\":\"ai-chat\"}}.",
+    "Create lead only when phone is present and the user asks for price, order, stock check, delivery, callback, reservation or calculation.",
+    "If there is no phone, lead must be null and answer should ask for phone only if the user wants an offer/order/callback.",
   ].join("\n");
 
   const response = await fetch("https://api.openai.com/v1/responses", {
@@ -374,10 +413,13 @@ async function callOpenAiAgent(messages, lang) {
   const parsed = parseAiJson(text);
 
   if (!parsed || !parsed.answer) {
-    return { answer: text || fallbackAiReply(lastMessage, lang).answer, lead: null };
+    return fallbackAiReply(lastMessage, lang);
   }
 
-  return { answer: String(parsed.answer).slice(0, 1200), lead: parsed.lead || null };
+  const fallbackLead = extractLeadFromMessage(lastMessage);
+  const lead = parsed.lead && parsed.lead.phone ? parsed.lead : fallbackLead;
+
+  return { answer: String(parsed.answer).slice(0, 1200), lead: lead || null };
 }
 
 async function handleAiChat(request, response) {
