@@ -74,6 +74,51 @@ body {
   text-transform: uppercase;
 }
 
+.top-social {
+  position: absolute;
+  left: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-social__item {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 0;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.top-social__item:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+  transform: translateY(-1px);
+}
+
+.top-social__item svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.top-social__item--facebook:hover {
+  background: #1877f2;
+}
+
+.top-social__item--instagram:hover {
+  background: #e1306c;
+}
+
+.top-social__item--tiktok:hover {
+  background: #000;
+}
+
 .messenger-links {
   display: flex;
   flex-wrap: wrap;
