@@ -2106,6 +2106,77 @@ h3 {
   padding: 12px;
 }
 
+.ai-chat__tools {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 12px 0;
+}
+
+.ai-chat__tools a,
+.ai-chat__tools button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0 8px;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.ai-chat__tools a:hover,
+.ai-chat__tools button:hover {
+  border-color: rgba(223, 47, 47, 0.55);
+  background: rgba(223, 47, 47, 0.18);
+}
+
+.ai-chat__lead {
+  display: none;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.ai-chat__lead.is-open {
+  display: grid;
+}
+
+.ai-chat__lead div {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 8px;
+}
+
+.ai-chat__lead input {
+  min-height: 40px;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0 10px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ai-chat__lead input::placeholder {
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.ai-chat__lead button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--accent);
+  font-weight: 900;
+}
+
 .ai-chat__quick-menu button {
   min-height: 34px;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -2126,7 +2197,7 @@ h3 {
 
 .ai-chat__form {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
   gap: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 12px;
@@ -2149,6 +2220,14 @@ h3 {
   color: #fff;
   background: var(--accent);
   font-weight: 800;
+}
+
+.ai-chat__form .ai-chat__reset {
+  width: 44px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 1.05rem;
 }
 
 @keyframes aiPanelIn {
@@ -2571,6 +2650,14 @@ h3 {
 
   .ai-chat__panel {
     bottom: 64px;
+  }
+
+  .ai-chat__tools {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ai-chat__lead div {
+    grid-template-columns: 1fr;
   }
 }
 

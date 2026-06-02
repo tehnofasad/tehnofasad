@@ -909,6 +909,19 @@
             <small>acum</small>
           </div>
         </div>
+        <div class="ai-chat__tools" aria-label="Actiuni rapide">
+          <button type="button" data-ai-action="lead">Cerere rapida</button>
+          <a href="tel:+37379155791">Suna</a>
+          <a href="https://wa.me/37379155791" target="_blank" rel="noreferrer">WhatsApp</a>
+          <a href="#roof-3d" data-ai-action="roof">3D</a>
+        </div>
+        <form class="ai-chat__lead" data-ai-lead-form aria-label="Cerere rapida AI">
+          <div>
+            <input name="phone" type="tel" placeholder="+373 00 00 00 00" required autocomplete="tel">
+            <input name="quantity" type="text" placeholder="m2 / grosime / localitate">
+          </div>
+          <button type="submit">Trimite in CRM</button>
+        </form>
         <div class="ai-chat__quick-menu" aria-label="Meniu rapid AI">
           <button type="button" data-ai-prompt="Vreau oferta pentru panouri sandwich. Ce date trebuie sa trimit?">Oferta panouri</button>
           <button type="button" data-ai-prompt="Ajuta-ma sa aleg intre panou de perete si panou de acoperis.">Alegere panou</button>
@@ -919,6 +932,7 @@
         </div>
         <form class="ai-chat__form">
           <input name="message" type="text" autocomplete="off" placeholder="Scrieti intrebarea..." required>
+          <button class="ai-chat__reset" type="button" data-ai-reset aria-label="Reset chat">↻</button>
           <button type="submit">Trimite</button>
         </form>
       </div>

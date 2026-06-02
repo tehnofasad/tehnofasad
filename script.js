@@ -12,6 +12,9 @@ const aiChatPanel = document.querySelector(".ai-chat__panel");
 const aiChatMessages = document.querySelector(".ai-chat__messages");
 const aiChatForm = document.querySelector(".ai-chat__form");
 const aiQuickButtons = document.querySelectorAll("[data-ai-prompt]");
+const aiLeadForm = document.querySelector("[data-ai-lead-form]");
+const aiLeadButton = document.querySelector("[data-ai-action='lead']");
+const aiResetButton = document.querySelector("[data-ai-reset]");
 const aiChatHistory = [];
 
 const i18n = {
@@ -501,6 +504,12 @@ function getAiMessageTime() {
   return new Intl.DateTimeFormat([], { hour: "2-digit", minute: "2-digit" }).format(new Date());
 }
 
+function getAiWelcomeText(lang) {
+  return lang === "ru"
+    ? "Здравствуйте. Я AI-консультант TEHNOFASAD. Помогу выбрать панели, кровлю, толщину, количество и доставку. Если отправите телефон и параметры проекта, я создам заявку в CRM для специалиста."
+    : "Buna ziua. Sunt consultantul AI TEHNOFASAD. Va ajut sa alegeti panouri sandwich, acoperis, grosime, cantitate si livrare. Daca imi trimiteti telefonul si parametrii proiectului, creez automat cererea in CRM pentru specialist.";
+}
+
 function appendAiMessage(text, type = "bot") {
   if (!aiChatMessages) return;
   const message = document.createElement("div");
@@ -533,6 +542,13 @@ function setAiChatOpen(isOpen) {
   if (isOpen) {
     aiChatForm?.elements.message?.focus();
   }
+}
+
+function resetAiChat() {
+  if (!aiChatMessages) return;
+  aiChatHistory.length = 0;
+  aiChatMessages.innerHTML = "";
+  appendAiMessage(getAiWelcomeText(localStorage.getItem("siteLang") || "ro"), "bot");
 }
 
 async function sendAiChatMessage(text) {
@@ -578,6 +594,53 @@ aiChatForm?.addEventListener("submit", (event) => {
   input.value = "";
   sendAiChatMessage(text);
 });
+
+aiLeadButton?.addEventListener("click", () => {
+  setAiChatOpen(true);
+  aiLeadForm?.classList.toggle("is-open");
+  aiLeadForm?.elements.phone?.focus();
+});
+
+aiLeadForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const lang = localStorage.getItem("siteLang") || "ro";
+  const button = aiLeadForm.querySelector("button[type='submit']");
+  const phone = aiLeadForm.elements.phone.value.trim();
+  const quantity = aiLeadForm.elements.quantity.value.trim();
+  const phoneDigits = phone.replace(/\D/g, "");
+
+  if (phoneDigits.length < 8) {
+    appendAiMessage(lang === "ru" ? "Введите корректный телефон, чтобы я создал заявку." : "Introduceti un telefon valid ca sa creez cererea.", "system");
+    return;
+  }
+
+  button.disabled = true;
+
+  try {
+    const response = await fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone,
+        quantity,
+        source: "ai-chat-quick-lead",
+        comment: `AI quick lead: ${quantity || "no details"}`,
+      }),
+    });
+
+    if (!response.ok) throw new Error("Lead request failed");
+
+    aiLeadForm.reset();
+    aiLeadForm.classList.remove("is-open");
+    appendAiMessage(lang === "ru" ? "Заявка создана в CRM. Специалист TEHNOFASAD свяжется с вами." : "Cererea a fost creata in CRM. Specialistul TEHNOFASAD va va contacta.", "system");
+  } catch (error) {
+    appendAiMessage(lang === "ru" ? "Не удалось создать заявку. Позвоните: +373 791 55 791." : "Nu am putut crea cererea. Sunati la +373 791 55 791.", "bot");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+aiResetButton?.addEventListener("click", resetAiChat);
 
 aiQuickButtons.forEach((button) => {
   button.addEventListener("click", () => {
