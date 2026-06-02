@@ -90,8 +90,8 @@ body {
 
 .top-strip .top-social__item {
   display: inline-flex;
-  width: 32px;
-  height: 30px;
+  width: 36px;
+  height: 34px;
   align-items: center;
   justify-content: center;
   border: 0;
@@ -110,8 +110,8 @@ body {
 
 .top-social__item svg {
   display: block;
-  width: 23px;
-  height: 23px;
+  width: 27px;
+  height: 27px;
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.22));
 }
 
@@ -120,8 +120,8 @@ body {
 }
 
 .top-social__item--tiktok svg {
-  width: 25px;
-  height: 25px;
+  width: 29px;
+  height: 29px;
 }
 
 .messenger-links {
