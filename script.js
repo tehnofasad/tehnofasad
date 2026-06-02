@@ -534,6 +534,36 @@ function appendAiMessage(text, type = "bot") {
   return message;
 }
 
+function setAiFormBusy(isBusy) {
+  if (!aiChatForm) return;
+  aiChatForm.querySelectorAll("input, button").forEach((element) => {
+    if (element.matches("[data-ai-reset]")) return;
+    element.disabled = isBusy;
+  });
+}
+
+async function typeAiMessage(text, type = "bot") {
+  const message = appendAiMessage("", type);
+  const textNode = message?.querySelector("span");
+  const finalText = String(text || "");
+
+  if (!textNode || type !== "bot") {
+    if (textNode) textNode.textContent = finalText;
+    return message;
+  }
+
+  textNode.textContent = "";
+  const chunkSize = finalText.length > 360 ? 4 : 2;
+
+  for (let index = 0; index < finalText.length; index += chunkSize) {
+    textNode.textContent += finalText.slice(index, index + chunkSize);
+    aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+    await new Promise((resolve) => setTimeout(resolve, 14));
+  }
+
+  return message;
+}
+
 function setAiChatOpen(isOpen) {
   if (!aiChat || !aiChatToggle || !aiChatPanel) return;
   aiChat.classList.toggle("is-open", isOpen);
@@ -556,6 +586,7 @@ async function sendAiChatMessage(text) {
   aiChatHistory.push({ role: "user", content: text });
   appendAiMessage(text, "user");
   const pending = appendAiMessage("", "typing");
+  setAiFormBusy(true);
 
   try {
     const response = await fetch("/api/ai-chat", {
@@ -568,7 +599,7 @@ async function sendAiChatMessage(text) {
 
     const payload = await response.json();
     pending?.remove();
-    appendAiMessage(payload.answer || (lang === "ru" ? "Не удалось получить ответ." : "Nu am putut genera raspunsul."), "bot");
+    await typeAiMessage(payload.answer || (lang === "ru" ? "Не удалось получить ответ." : "Nu am putut genera raspunsul."), "bot");
     aiChatHistory.push({ role: "assistant", content: payload.answer || "" });
 
     if (payload.leadCreated) {
@@ -576,7 +607,10 @@ async function sendAiChatMessage(text) {
     }
   } catch (error) {
     pending?.remove();
-    appendAiMessage(lang === "ru" ? "Сейчас AI недоступен. Позвоните: +373 791 55 791." : "AI nu este disponibil acum. Sunati la +373 791 55 791.", "bot");
+    await typeAiMessage(lang === "ru" ? "Сейчас AI недоступен. Позвоните: +373 791 55 791." : "AI nu este disponibil acum. Sunati la +373 791 55 791.", "bot");
+  } finally {
+    setAiFormBusy(false);
+    aiChatForm?.elements.message?.focus();
   }
 }
 
