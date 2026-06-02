@@ -497,13 +497,32 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
 
+function getAiMessageTime() {
+  return new Intl.DateTimeFormat([], { hour: "2-digit", minute: "2-digit" }).format(new Date());
+}
+
 function appendAiMessage(text, type = "bot") {
   if (!aiChatMessages) return;
   const message = document.createElement("div");
   message.className = `ai-chat__message ai-chat__message--${type}`;
-  message.textContent = text;
+
+  if (type === "typing") {
+    message.innerHTML = '<span class="ai-chat__typing" aria-label="Typing"><i></i><i></i><i></i></span>';
+  } else {
+    const textNode = document.createElement("span");
+    textNode.textContent = text;
+    message.appendChild(textNode);
+
+    if (type !== "system") {
+      const time = document.createElement("small");
+      time.textContent = getAiMessageTime();
+      message.appendChild(time);
+    }
+  }
+
   aiChatMessages.appendChild(message);
   aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+  return message;
 }
 
 function setAiChatOpen(isOpen) {
@@ -520,8 +539,7 @@ async function sendAiChatMessage(text) {
   const lang = localStorage.getItem("siteLang") || "ro";
   aiChatHistory.push({ role: "user", content: text });
   appendAiMessage(text, "user");
-  appendAiMessage(lang === "ru" ? "Пишу ответ..." : "Scriu raspunsul...", "system");
-  const pending = aiChatMessages?.lastElementChild;
+  const pending = appendAiMessage("", "typing");
 
   try {
     const response = await fetch("/api/ai-chat", {
