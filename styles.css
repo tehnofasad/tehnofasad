@@ -122,6 +122,10 @@ body {
 .top-social__item--tiktok svg {
   width: 29px;
   height: 29px;
+  border-radius: 999px;
+  padding: 2px;
+  background: #fff;
+  filter: drop-shadow(0 3px 7px rgba(37, 244, 238, 0.24));
 }
 
 .messenger-links {
