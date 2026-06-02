@@ -2073,6 +2073,66 @@ h3 {
   background: rgba(255, 255, 255, 0.1);
 }
 
+.ai-chat__crm-card {
+  width: min(100%, 320px);
+  justify-self: start;
+  border: 1px solid rgba(60, 180, 255, 0.28);
+  border-radius: 10px;
+  padding: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  background:
+    linear-gradient(135deg, rgba(24, 35, 54, 0.96), rgba(8, 15, 28, 0.96)),
+    rgba(255, 255, 255, 0.06);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+  animation: aiMessageIn 0.18s ease both;
+}
+
+.ai-chat__crm-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.ai-chat__crm-card-head strong {
+  color: #8ddcff;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ai-chat__crm-card-head button {
+  min-height: 28px;
+  border: 1px solid rgba(60, 180, 255, 0.28);
+  border-radius: 7px;
+  padding: 0 9px;
+  color: #bcecff;
+  background: rgba(60, 180, 255, 0.12);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.ai-chat__crm-row {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 0.78rem;
+}
+
+.ai-chat__crm-row span {
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.ai-chat__crm-row b {
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
 .ai-chat__message .ai-chat__typing {
   display: inline-flex;
   gap: 5px;

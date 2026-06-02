@@ -289,6 +289,145 @@ function extractTextFromOpenAI(payload) {
   return chunks.join("\n").trim();
 }
 
+function parseNumber(value) {
+  return Number(String(value || "").replace(",", "."));
+}
+
+const AI_PRICE_RATES_MDL = {
+  wall: { 40: 180, 50: 180, 60: 220, 80: 240, 100: 290 },
+  roof: { 40: 200, 50: 200, 60: 230, 80: 260, 100: 290 },
+  metalTile: 120,
+  profiledSheet: 90,
+};
+
+function nearestRate(rateMap, thickness) {
+  if (!thickness) return null;
+  const keys = Object.keys(rateMap).map(Number).sort((a, b) => a - b);
+  const nearest = keys.reduce((best, current) => {
+    return Math.abs(current - thickness) < Math.abs(best - thickness) ? current : best;
+  }, keys[0]);
+  return rateMap[nearest];
+}
+
+function formatMdlRange(range) {
+  if (!range) return "";
+  return `${range.min.toLocaleString("ro-MD")}-${range.max.toLocaleString("ro-MD")} MDL`;
+}
+
+function getPriceRangeMdl(area, analysis = {}) {
+  const envMin = Number(process.env.PANEL_PRICE_MIN_MDL_M2 || 0);
+  const envMax = Number(process.env.PANEL_PRICE_MAX_MDL_M2 || 0);
+  if (area && envMin && envMax && envMax >= envMin) {
+    return {
+      min: Math.round(area * envMin),
+      max: Math.round(area * envMax),
+      note: `${envMin}-${envMax} MDL/m2 env range`,
+    };
+  }
+
+  let base = 0;
+  if (analysis.materialIntent === "metal tile") {
+    base = Number(area || 0) * AI_PRICE_RATES_MDL.metalTile;
+  } else if (analysis.materialIntent === "profiled sheet") {
+    base = Number(area || 0) * AI_PRICE_RATES_MDL.profiledSheet;
+  } else if (analysis.wallArea && analysis.roofArea) {
+    const wallRate = nearestRate(AI_PRICE_RATES_MDL.wall, analysis.thicknessValue) || AI_PRICE_RATES_MDL.wall[80];
+    const roofRate = nearestRate(AI_PRICE_RATES_MDL.roof, analysis.thicknessValue) || AI_PRICE_RATES_MDL.roof[80];
+    base = analysis.wallArea * wallRate + analysis.roofArea * roofRate;
+  } else if (area) {
+    const rateMap = analysis.materialIntent === "sandwich panels" && analysis.roofArea === analysis.calculatedArea
+      ? AI_PRICE_RATES_MDL.roof
+      : AI_PRICE_RATES_MDL.wall;
+    base = area * (nearestRate(rateMap, analysis.thicknessValue) || rateMap[80]);
+  }
+
+  if (!base) return null;
+  return {
+    min: Math.round(base * 0.85),
+    max: Math.round(base * 1.15),
+    note: "preliminary calculator range, +/-15%",
+  };
+}
+
+function buildManagerContext(message) {
+  const analysis = analyzeProjectMessage(message);
+  const priceRange = getPriceRangeMdl(analysis.calculatedArea, analysis);
+  const parts = [];
+
+  if (analysis.objectType) parts.push(`object_type=${analysis.objectType}`);
+  if (analysis.dimensions) parts.push(`dimensions=${analysis.dimensions}`);
+  if (analysis.roofArea) parts.push(`roof_area_m2_with_15_percent_reserve=${analysis.roofArea}`);
+  if (analysis.wallArea) parts.push(`wall_area_m2=${analysis.wallArea}`);
+  if (analysis.totalArea) parts.push(`total_panels_area_m2=${analysis.totalArea}`);
+  if (analysis.calculatedArea) parts.push(`suggested_area_m2=${analysis.calculatedArea}`);
+  if (analysis.thickness) parts.push(`thickness=${analysis.thickness}`);
+  if (priceRange) parts.push(`optional_price_range_mdl=${priceRange.min}-${priceRange.max}`);
+  if (analysis.assumptions.length) parts.push(`assumptions=${analysis.assumptions.join("; ")}`);
+  if (analysis.missing.length) parts.push(`missing=${analysis.missing.join(", ")}`);
+
+  return {
+    analysis,
+    priceRange,
+    text: parts.length ? `Manager calculator context: ${parts.join(" | ")}` : "",
+  };
+}
+
+function buildAiCrmData(lead, managerContext) {
+  if (!lead) return null;
+  const analysis = managerContext?.analysis || {};
+  const priceRange = managerContext?.priceRange;
+  return {
+    name: lead.name || "",
+    phone: lead.phone || "",
+    object: analysis.objectType || lead.material || "",
+    area_m2: analysis.calculatedArea || "",
+    thickness: lead.thickness || analysis.thickness || "",
+    logistics: lead.location ? `delivery/pickup: ${lead.location}` : "",
+    estimate_mdl: formatMdlRange(priceRange),
+  };
+}
+
+function fallbackAiReply(message, lang) {
+  const text = String(message || "");
+  const isRu = lang === "ru" || /[а-яё]/i.test(text);
+  const extractedLead = extractLeadFromMessage(message);
+  const wantsOffer = /(цена|стоим|заказ|заявк|позвон|оферт|pret|oferta|comand|sunati|apel|calcul|расчет|расчёт)/i.test(text);
+  const managerContext = buildManagerContext(text);
+  const area = managerContext.analysis.calculatedArea;
+  const range = formatMdlRange(managerContext.priceRange);
+
+  if (area) {
+    const analysis = managerContext.analysis;
+    const details = analysis.wallArea && analysis.roofArea
+      ? (isRu
+        ? `Стены около ${analysis.wallArea} м2, крыша с запасом 15% около ${analysis.roofArea} м2, всего примерно ${area} м2.`
+        : `Pereti aproximativ ${analysis.wallArea} m2, acoperis cu rezerva 15% aproximativ ${analysis.roofArea} m2, total aproximativ ${area} m2.`)
+      : (isRu ? `Предварительная площадь около ${area} м2.` : `Suprafata preliminara este aproximativ ${area} m2.`);
+    const estimate = range
+      ? (isRu ? ` Ориентир по материалу: ${range}.` : ` Orientativ material: ${range}.`)
+      : "";
+    const question = isRu
+      ? "Напишите толщину панели, город и телефон, чтобы я создал заявку для менеджера."
+      : "Scrieti grosimea panoului, localitatea si telefonul ca sa creez cererea pentru manager.";
+    return { answer: `${details}${estimate} ${question}`, lead: extractedLead, crmData: buildAiCrmData(extractedLead, managerContext) };
+  }
+
+  if (extractedLead && wantsOffer) {
+    const answer = isRu
+      ? "Принял данные для заявки. Специалист TEHNOFASAD проверит наличие, уточнит параметры и свяжется с вами."
+      : "Am preluat datele pentru cerere. Specialistul TEHNOFASAD va verifica disponibilitatea, va confirma parametrii si va va contacta.";
+    return { answer, lead: extractedLead, crmData: buildAiCrmData(extractedLead, managerContext) };
+  }
+
+  return {
+    answer: isRu
+      ? "Я AI-менеджер TEHNOFASAD. Напишите тип объекта и размеры, например: ангар 20x40, панели 100 мм."
+      : "Sunt AI manager TEHNOFASAD. Scrieti tipul obiectului si dimensiunile, de exemplu: hala 20x40, panouri 100 mm.",
+    lead: extractedLead,
+    crmData: buildAiCrmData(extractedLead, managerContext),
+  };
+}
+
 function extractLeadFromMessage(message) {
   const text = String(message || "");
   const lower = text.toLowerCase();
@@ -298,16 +437,16 @@ function extractLeadFromMessage(message) {
 
   const emailMatch = text.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i);
   const quantityMatch = text.match(/(\d+(?:[.,]\d+)?)\s*(m2|m²|м2|м²|mp|m\.p\.|метр|metri)/i);
-  const thicknessMatch = text.match(/(\d{2,3})\s*(mm|мм|milimetri)/i);
-  const knownLocationMatch = text.match(/\b(Chisinau|Chișinău|Кишинев|Кишинёв|Balti|Bălți|Бельцы|Orhei|Оргеев|Ungheni|Унгены|Cahul|Кагул|Soroca|Сороки|Edinet|Единец)\b/i);
-  const locationPhraseMatch = text.match(/(?:город|localitate|localitatea|oras|oraș|in|în|в)\s+([A-Za-zА-Яа-яЁёĂăÂâÎîȘșȚț -]{3,40})/i);
-  const nameMatch = text.match(/(?:меня зовут|я\s+|numele meu este|ma numesc|mă numesc|nume)\s+([A-Za-zА-Яа-яЁёĂăÂâÎîȘșȚț -]{2,40})/i);
+  const thicknessMatch = text.match(/(\d{2,3})\s*(mm|\u043c\u043c|milimetri)/i);
+  const knownLocationMatch = text.match(/\b(Chisinau|Chișinău|\u041a\u0438\u0448\u0438\u043d\u0435\u0432|\u041a\u0438\u0448\u0438\u043d\u0451\u0432|Balti|Bălți|\u0411\u0435\u043b\u044c\u0446\u044b|Orhei|\u041e\u0440\u0433\u0435\u0435\u0432|Ungheni|\u0423\u043d\u0433\u0435\u043d\u044b|Cahul|\u041a\u0430\u0433\u0443\u043b|Soroca|\u0421\u043e\u0440\u043e\u043a\u0438|Edinet|\u0415\u0434\u0438\u043d\u0435\u0446)\b/i);
+  const locationPhraseMatch = text.match(/(?:\u0433\u043e\u0440\u043e\u0434|localitate|localitatea|oras|oraș|in|în|\u0432)\s+([A-Za-z\u0400-\u04ffĂăÂâÎîȘșȚț -]{3,40})/i);
+  const nameMatch = text.match(/(?:\u043c\u0435\u043d\u044f \u0437\u043e\u0432\u0443\u0442|\u044f\s+|numele meu este|ma numesc|mă numesc|nume)\s+([A-Za-z\u0400-\u04ffĂăÂâÎîȘșȚț -]{2,40})/i);
 
   let material = "";
-  if (/sandwich|сэндвич|panou|panouri|панел/i.test(lower)) material = "sandwich panels";
-  if (/acoperis|acoperiș|кры|roof/i.test(lower)) material = material ? `${material}, roof` : "roof";
-  if (/perete|стен|wall/i.test(lower)) material = material ? `${material}, wall` : "wall";
-  if (/tigla|țigl|черепиц|metal tile/i.test(lower)) material = "metal tile";
+  if (/sandwich|\u0441\u044d\u043d\u0434\u0432\u0438\u0447|panou|panouri|\u043f\u0430\u043d\u0435\u043b/i.test(lower)) material = "sandwich panels";
+  if (/acoperis|acoperiș|\u043a\u0440\u044b|roof/i.test(lower)) material = material ? `${material}, roof` : "roof";
+  if (/perete|\u0441\u0442\u0435\u043d|wall/i.test(lower)) material = material ? `${material}, wall` : "wall";
+  if (/tigla|țigl|\u0447\u0435\u0440\u0435\u043f\u0438\u0446|metal tile/i.test(lower)) material = "metal tile";
 
   return {
     name: nameMatch ? nameMatch[1].trim() : "",
@@ -322,18 +461,20 @@ function extractLeadFromMessage(message) {
   };
 }
 
-function parseNumber(value) {
-  return Number(String(value || "").replace(",", "."));
-}
-
 function analyzeProjectMessage(message) {
   const text = String(message || "");
   const lower = text.toLowerCase();
-  const dimensionsMatch = text.match(/(\d+(?:[.,]\d+)?)\s*[xх×]\s*(\d+(?:[.,]\d+)?)(?:\s*[xх×]\s*(\d+(?:[.,]\d+)?))?/i);
+  const dimensionsMatch = text.match(/(\d+(?:[.,]\d+)?)\s*[x\u0445\u00d7]\s*(\d+(?:[.,]\d+)?)(?:\s*[x\u0445\u00d7]\s*(\d+(?:[.,]\d+)?))?/i);
   const explicitAreaMatch = text.match(/(\d+(?:[.,]\d+)?)\s*(m2|m²|м2|м²|mp|m\.p\.)/i);
-  const thicknessMatch = text.match(/(\d{2,3})\s*(mm|мм|milimetri)/i);
-  const isRoof = /(roof|acoperis|acoperiș|кры|кров)/i.test(lower);
-  const isWall = /(wall|perete|стен|hala|hală|ангар|склад|depozit)/i.test(lower);
+  const thicknessMatch = text.match(/(\d{2,3})\s*(mm|\u043c\u043c|milimetri)/i);
+  const hasPhone = /\+?\d[\d\s()-]{7,}\d/.test(text);
+  const isHall = /(hala|hală|angar|hangar|depozit|\u0430\u043d\u0433\u0430\u0440|\u0441\u043a\u043b\u0430\u0434)/i.test(lower);
+  const isHouse = /(casa|casă|house|\u0434\u043e\u043c)/i.test(lower);
+  const isGarage = /(garaj|\u0433\u0430\u0440\u0430\u0436)/i.test(lower);
+  const isRoof = /(roof|acoperis|acoperiș|\u043a\u0440\u044b|\u043a\u0440\u043e\u0432)/i.test(lower);
+  const isWall = /(wall|perete|\u0441\u0442\u0435\u043d|\u0444\u0430\u0441\u0430\u0434)/i.test(lower);
+  const isMetalTile = /(tigla|țigl|\u0447\u0435\u0440\u0435\u043f\u0438\u0446|metal tile)/i.test(lower);
+  const isProfiledSheet = /(tabla profil|tablă profil|\u043f\u0440\u043e\u0444\u043d\u0430\u0441\u0442\u0438\u043b|\u043f\u0440\u043e\u0444\u043b\u0438\u0441\u0442|profiled sheet)/i.test(lower);
   const result = {
     objectType: "",
     dimensions: "",
@@ -344,31 +485,42 @@ function analyzeProjectMessage(message) {
     calculatedArea: null,
     wallArea: null,
     roofArea: null,
+    totalArea: null,
+    thicknessValue: thicknessMatch ? Number(thicknessMatch[1]) : null,
     thickness: thicknessMatch ? `${thicknessMatch[1]} ${thicknessMatch[2]}` : "",
+    materialIntent: isMetalTile ? "metal tile" : (isProfiledSheet ? "profiled sheet" : "sandwich panels"),
     assumptions: [],
     missing: [],
   };
 
-  if (/hala|hală|ангар|склад|depozit/i.test(lower)) result.objectType = "industrial/agricultural hall";
-  if (/casa|дом|house/i.test(lower)) result.objectType = "house";
-  if (/garaj|гараж/i.test(lower)) result.objectType = "garage";
+  if (isHall) result.objectType = "industrial/agricultural hall";
+  if (isHouse) result.objectType = "house";
+  if (isGarage) result.objectType = "garage";
 
   if (dimensionsMatch) {
     result.length = parseNumber(dimensionsMatch[1]);
     result.width = parseNumber(dimensionsMatch[2]);
     result.height = dimensionsMatch[3] ? parseNumber(dimensionsMatch[3]) : null;
     result.dimensions = dimensionsMatch[0];
-    result.roofArea = Math.round(result.length * result.width);
 
-    if (result.height) {
-      result.wallArea = Math.round(2 * (result.length + result.width) * result.height);
+    const effectiveHeight = result.height || (isHall ? 6 : null);
+    result.roofArea = Math.round(result.length * result.width * 1.15);
+
+    if (effectiveHeight) {
+      result.wallArea = Math.round(2 * (result.length + result.width) * effectiveHeight);
+      if (!result.height) result.assumptions.push("wall height assumed at 6 m for preliminary hall estimate");
     }
 
-    if (isRoof && result.roofArea) result.calculatedArea = result.roofArea;
-    if (isWall && result.wallArea) result.calculatedArea = result.wallArea;
-    if (!result.calculatedArea && result.roofArea) {
+    if (isRoof && !isWall) {
       result.calculatedArea = result.roofArea;
-      result.assumptions.push("dimensions treated as plan/roof area; wall area needs height");
+    } else if (isWall && !isRoof && result.wallArea) {
+      result.calculatedArea = result.wallArea;
+    } else if (result.wallArea && result.roofArea && isHall) {
+      result.totalArea = result.wallArea + result.roofArea;
+      result.calculatedArea = result.totalArea;
+    } else {
+      result.calculatedArea = result.roofArea;
+      result.assumptions.push("dimensions treated as roof/plan area with 15% reserve");
     }
   }
 
@@ -376,76 +528,14 @@ function analyzeProjectMessage(message) {
     result.calculatedArea = Math.round(result.explicitArea);
   }
 
-  if (result.length && result.width && !result.height && isWall) {
-    result.missing.push("height for wall-panel area");
+  if (result.length && result.width && !result.height && (isWall || isHall)) {
+    result.missing.push("confirm wall height");
   }
 
-  if (!result.thickness) result.missing.push("panel thickness");
-  if (!/\+?\d[\d\s()-]{7,}\d/.test(text)) result.missing.push("phone");
+  if (!result.thickness && result.materialIntent === "sandwich panels") result.missing.push("panel thickness");
+  if (!hasPhone) result.missing.push("phone");
 
   return result;
-}
-
-function getPriceRangeMdl(area) {
-  const min = Number(process.env.PANEL_PRICE_MIN_MDL_M2 || 0);
-  const max = Number(process.env.PANEL_PRICE_MAX_MDL_M2 || 0);
-  if (!area || !min || !max || max < min) return null;
-  return {
-    min: Math.round(area * min),
-    max: Math.round(area * max),
-    unitMin: min,
-    unitMax: max,
-  };
-}
-
-function buildManagerContext(message) {
-  const analysis = analyzeProjectMessage(message);
-  const priceRange = getPriceRangeMdl(analysis.calculatedArea);
-  const parts = [];
-
-  if (analysis.objectType) parts.push(`object_type=${analysis.objectType}`);
-  if (analysis.dimensions) parts.push(`dimensions=${analysis.dimensions}`);
-  if (analysis.roofArea) parts.push(`plan_or_roof_area_m2=${analysis.roofArea}`);
-  if (analysis.wallArea) parts.push(`wall_area_m2=${analysis.wallArea}`);
-  if (analysis.calculatedArea) parts.push(`suggested_area_m2=${analysis.calculatedArea}`);
-  if (analysis.thickness) parts.push(`thickness=${analysis.thickness}`);
-  if (priceRange) parts.push(`optional_price_range_mdl=${priceRange.min}-${priceRange.max} based on ${priceRange.unitMin}-${priceRange.unitMax} MDL/m2`);
-  if (analysis.assumptions.length) parts.push(`assumptions=${analysis.assumptions.join("; ")}`);
-  if (analysis.missing.length) parts.push(`missing=${analysis.missing.join(", ")}`);
-
-  return {
-    analysis,
-    priceRange,
-    text: parts.length ? `Manager calculator context: ${parts.join(" | ")}` : "",
-  };
-}
-
-function fallbackAiReply(message, lang) {
-  const text = String(message || "");
-  const isRu = lang === "ru" || /[а-яё]/i.test(text);
-  const extractedLead = extractLeadFromMessage(message);
-  const wantsOffer = /(цена|стоим|заказ|заявк|позвон|оферт|pret|oferta|comand|sunati|apel|calcul)/i.test(text);
-  const managerContext = buildManagerContext(text);
-  let answer;
-
-  if (extractedLead && wantsOffer) {
-    answer = isRu
-      ? "Принял данные для заявки. Специалист TEHNOFASAD проверит наличие, уточнит параметры и свяжется с вами. Если есть возможность, допишите тип панели, толщину, количество м2 и город."
-      : "Am preluat datele pentru cerere. Specialistul TEHNOFASAD va verifica disponibilitatea, va confirma parametrii si va va contacta. Daca puteti, scrieti tipul panoului, grosimea, cantitatea m2 si localitatea.";
-  } else if (managerContext.analysis.calculatedArea) {
-    const area = managerContext.analysis.calculatedArea;
-    const range = managerContext.priceRange;
-    const rangeText = range ? ` Orientativ: ${range.min}-${range.max} MDL, inainte de confirmarea stocului.` : "";
-    answer = isRu
-      ? `Предварительно вижу площадь около ${area} м2. Для точного предложения нужны тип панели, толщина, город и телефон.`
-      : `Estimativ, suprafata este aproximativ ${area} m2.${rangeText} Pentru oferta exacta am nevoie de tipul panoului, grosime, localitate si telefon.`;
-  } else {
-    answer = isRu
-      ? "Я AI-консультант TEHNOFASAD. Помогаю выбрать сэндвич-панели, кровельные материалы, водостоки и подготовить заявку. Для точного предложения напишите: тип материала, толщина, количество м2, город и телефон."
-      : "Sunt consultantul AI TEHNOFASAD. Va ajut sa alegeti panouri sandwich, materiale pentru acoperis, sisteme pluviale si sa pregatim cererea. Pentru oferta exacta scrieti: tipul materialului, grosimea, cantitatea m2, localitatea si telefonul.";
-  }
-
-  return { answer, lead: extractedLead };
 }
 
 function parseAiJson(text) {
@@ -481,16 +571,17 @@ async function callOpenAiAgent(messages, lang) {
     "Strong consultation rules:",
     "- For sandwich panels, ask/track purpose, panel type wall/roof, thickness, quantity in m2, color if mentioned, city, pickup/delivery, phone.",
     "- For roofs, ask/track roof type, roof area or dimensions, material, drainage, city, phone. Mention that the 3D configurator can estimate roof area and drainage length.",
+    "- Mission: qualify the client in about 4-5 messages, give useful value first, then collect phone.",
     "- For price, stock, delivery, callback, order, reservation: collect phone and order parameters, then create a lead.",
     "- Never invent exact prices, stock quantities, delivery price or final deadlines. Say a specialist confirms by real stock and parameters.",
-    "- Keep answers short, practical and sales-focused: 2-5 sentences unless the user asks for details.",
+    "- Keep answers short, practical and sales-focused: 2-3 sentences unless the user asks for details.",
     "- Always end with one clear next step or one targeted question. Avoid generic endings.",
     "- If data is missing, ask for the next 1-3 most important missing fields, not a long questionnaire.",
     "- Act like an account manager: summarize what is already known, then ask only what is missing.",
     "- When enough information exists except phone, ask for phone to create the CRM request.",
     "- Use the Manager calculator context when present. If dimensions are given, calculate/confirm area before asking for phone.",
-    "- Give an approximate MDL range only if optional_price_range_mdl is present in the manager context. Otherwise say price is confirmed by stock and parameters.",
-    "- For a hall like 20x40 without height: plan/roof area is length*width; wall-panel area requires height. Explain this briefly and ask for height if wall panels are needed.",
+    "- Give the approximate MDL range from optional_price_range_mdl when present, but do not expose unit rates.",
+    "- For a hall like 20x40: roof area includes 15% reserve; wall area uses height. If height is missing and the calculator assumed 6 m, say it is a preliminary assumption and ask to confirm height.",
     "- If the user already gave phone plus a buying intent, confirm that the request was accepted and say a specialist will contact them.",
     "Return ONLY valid JSON, no markdown, no prose outside JSON.",
     "JSON shape: {\"answer\":\"string\",\"lead\":null or {\"name\":\"\",\"phone\":\"\",\"email\":\"\",\"material\":\"\",\"quantity\":\"\",\"thickness\":\"\",\"location\":\"\",\"comment\":\"\",\"source\":\"ai-chat\"}}.",
@@ -533,7 +624,11 @@ async function callOpenAiAgent(messages, lang) {
   const fallbackLead = extractLeadFromMessage(lastMessage);
   const lead = parsed.lead && parsed.lead.phone ? parsed.lead : fallbackLead;
 
-  return { answer: String(parsed.answer).slice(0, 1200), lead: lead || null };
+  return {
+    answer: String(parsed.answer).slice(0, 1200),
+    lead: lead || null,
+    crmData: buildAiCrmData(lead, managerContext),
+  };
 }
 
 async function handleAiChat(request, response) {
@@ -567,12 +662,20 @@ async function handleAiChat(request, response) {
     if (aiResult.lead) {
       const phoneDigits = String(aiResult.lead.phone || "").replace(/\D/g, "");
       if (phoneDigits.length >= 8) {
-        await saveLead({ ...aiResult.lead, source: "ai-chat" });
+        const crmData = aiResult.crmData || buildAiCrmData(aiResult.lead, buildManagerContext(lastMessage));
+        const estimateLine = crmData?.estimate_mdl ? `\nEstimare AI: ${crmData.estimate_mdl}` : "";
+        const areaLine = crmData?.area_m2 ? `\nSuprafata AI: ${crmData.area_m2} m2` : "";
+        await saveLead({
+          ...aiResult.lead,
+          source: "ai-chat",
+          comment: `${aiResult.lead.comment || `AI chat lead: ${String(lastMessage).slice(0, 450)}`}${areaLine}${estimateLine}`,
+        });
+        aiResult.crmData = crmData;
         leadCreated = true;
       }
     }
 
-    sendJson(response, 200, { ok: true, answer: aiResult.answer, leadCreated });
+    sendJson(response, 200, { ok: true, answer: aiResult.answer, leadCreated, crmData: leadCreated ? aiResult.crmData : null });
   } catch (error) {
     sendJson(response, 400, { ok: false, message: "Invalid AI chat request" });
   }

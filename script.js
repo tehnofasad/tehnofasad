@@ -566,6 +566,85 @@ async function typeAiMessage(text, type = "bot") {
   return message;
 }
 
+function appendAiCrmCard(data) {
+  if (!aiChatMessages || !data) return;
+  const lang = localStorage.getItem("siteLang") || "ro";
+  const labels = lang === "ru"
+    ? {
+      title: "Заявка для CRM",
+      copied: "Скопировано",
+      copy: "Копировать",
+      name: "Клиент",
+      phone: "Телефон",
+      object: "Объект",
+      area: "Площадь",
+      thickness: "Толщина",
+      logistics: "Логистика",
+      estimate: "Оценка",
+    }
+    : {
+      title: "Cerere pentru CRM",
+      copied: "Copiat",
+      copy: "Copiaza",
+      name: "Client",
+      phone: "Telefon",
+      object: "Obiect",
+      area: "Suprafata",
+      thickness: "Grosime",
+      logistics: "Logistica",
+      estimate: "Estimare",
+    };
+  const rows = [
+    [labels.name, data.name],
+    [labels.phone, data.phone],
+    [labels.object, data.object],
+    [labels.area, data.area_m2 ? `${data.area_m2} m2` : ""],
+    [labels.thickness, data.thickness],
+    [labels.logistics, data.logistics],
+    [labels.estimate, data.estimate_mdl],
+  ].filter(([, value]) => value);
+  const card = document.createElement("div");
+  card.className = "ai-chat__crm-card";
+
+  const header = document.createElement("div");
+  header.className = "ai-chat__crm-card-head";
+
+  const title = document.createElement("strong");
+  title.textContent = labels.title;
+
+  const copyButton = document.createElement("button");
+  copyButton.type = "button";
+  copyButton.textContent = labels.copy;
+
+  const copyText = rows.map(([key, value]) => `${key}: ${value}`).join("\n");
+  copyButton.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(copyText);
+      copyButton.textContent = labels.copied;
+      setTimeout(() => { copyButton.textContent = labels.copy; }, 1600);
+    } catch (error) {
+      copyButton.textContent = labels.copy;
+    }
+  });
+
+  header.append(title, copyButton);
+  card.appendChild(header);
+
+  rows.forEach(([key, value]) => {
+    const row = document.createElement("div");
+    row.className = "ai-chat__crm-row";
+    const keyNode = document.createElement("span");
+    keyNode.textContent = key;
+    const valueNode = document.createElement("b");
+    valueNode.textContent = value;
+    row.append(keyNode, valueNode);
+    card.appendChild(row);
+  });
+
+  aiChatMessages.appendChild(card);
+  aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+}
+
 function setAiChatOpen(isOpen) {
   if (!aiChat || !aiChatToggle || !aiChatPanel) return;
   aiChat.classList.toggle("is-open", isOpen);
@@ -606,6 +685,7 @@ async function sendAiChatMessage(text) {
 
     if (payload.leadCreated) {
       appendAiMessage(lang === "ru" ? "Заявка создана. Специалист свяжется с вами." : "Cererea a fost creata. Un specialist va va contacta.", "system");
+      appendAiCrmCard(payload.crmData);
     }
   } catch (error) {
     pending?.remove();
