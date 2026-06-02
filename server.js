@@ -3,7 +3,6 @@ const fs = require("fs");
 const fsp = require("fs/promises");
 const path = require("path");
 const zlib = require("zlib");
-const crypto = require("crypto");
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
@@ -123,60 +122,7 @@ function toArray(value) {
     .filter(Boolean);
 }
 
-function flattenParams(value, prefix, output = {}) {
-  if (Array.isArray(value)) {
-    value.forEach((item, index) => flattenParams(item, `${prefix}[${index}]`, output));
-    return output;
-  }
-
-  if (value && typeof value === "object") {
-    Object.keys(value)
-      .sort()
-      .forEach((key) => flattenParams(value[key], prefix ? `${prefix}[${key}]` : key, output));
-    return output;
-  }
-
-  if (value !== undefined && value !== null && value !== "") {
-    output[prefix] = String(value);
-  }
-
-  return output;
-}
-
-function encodeForm(params) {
-  return Object.keys(params)
-    .sort()
-    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key]).replace(/%20/g, "+")}`)
-    .join("&");
-}
-
-function createTeamSaleAuthHeader(method, params) {
-  const apiKey = process.env.TEAMSALE_API_KEY || process.env.ZADARMA_API_KEY;
-  const apiSecret = process.env.TEAMSALE_API_SECRET || process.env.ZADARMA_API_SECRET;
-
-  if (!apiKey || !apiSecret) return null;
-
-  const flatParams = flattenParams(params);
-  const paramsString = encodeForm(flatParams);
-  const md5 = crypto.createHash("md5").update(paramsString).digest("hex");
-  const signatureSource = `${method}${paramsString}${md5}`;
-  const signature = crypto.createHmac("sha1", apiSecret).update(signatureSource).digest("base64");
-  return `${apiKey}:${signature}`;
-}
-
-function buildTeamSaleLeadPayload(lead) {
-  const labels = toArray(process.env.TEAMSALE_LABEL_IDS).map((id) => ({ id }));
-  const utms = toArray(process.env.TEAMSALE_UTM_IDS).map((id) => ({ id }));
-  const contacts = [];
-
-  if (lead.email) {
-    contacts.push({ type: "email_work", value: lead.email });
-  }
-
-  if (lead.telegram) contacts.push({ type: "telegram", value: lead.telegram });
-  if (lead.viber) contacts.push({ type: "viber", value: lead.viber });
-  if (lead.whatsapp) contacts.push({ type: "whatsapp", value: lead.whatsapp });
-
+function buildLeadComment(lead) {
   const comment = [
     lead.comment,
     lead.quantity ? `Cantitate: ${lead.quantity}` : "",
@@ -187,56 +133,73 @@ function buildTeamSaleLeadPayload(lead) {
     lead.source ? `Sursa: ${lead.source}` : "",
   ].filter(Boolean).join("\n");
 
-  const crmLead = {
-    name: lead.name || `TEHNOFASAD lead ${lead.phone || ""}`.trim(),
-    comment,
-    city: lead.location || "",
-    website: "https://tehnofasad.md/",
-    lead_source: "form",
-    lead_status: process.env.TEAMSALE_LEAD_STATUS || "not_processed",
-    phones: lead.phone ? [{ type: "work", phone: lead.phone }] : [],
-    contacts,
+  return comment || "Lead TEHNOFASAD";
+}
+
+function buildBitrix24LeadPayload(lead) {
+  const fields = {
+    TITLE: lead.product ? `TEHNOFASAD: ${lead.product}` : "TEHNOFASAD: solicitare de pe site",
+    NAME: lead.name || "",
+    COMMENTS: buildLeadComment(lead),
+    SOURCE_ID: process.env.BITRIX24_SOURCE_ID || "WEB",
+    STATUS_ID: process.env.BITRIX24_STATUS_ID || "NEW",
+    WEB: [{ VALUE: "https://tehnofasad.md/", VALUE_TYPE: "WORK" }],
   };
 
-  if (process.env.TEAMSALE_RESPONSIBLE_USER_ID) {
-    crmLead.responsible_user_id = process.env.TEAMSALE_RESPONSIBLE_USER_ID;
+  if (lead.phone) {
+    fields.PHONE = [{ VALUE: lead.phone, VALUE_TYPE: "WORK" }];
   }
 
-  if (labels.length) crmLead.labels = labels;
-  if (utms.length) crmLead.utms = utms;
+  if (lead.email) {
+    fields.EMAIL = [{ VALUE: lead.email, VALUE_TYPE: "WORK" }];
+  }
+
+  if (lead.location) {
+    fields.ADDRESS_CITY = lead.location;
+  }
+
+  if (process.env.BITRIX24_ASSIGNED_BY_ID) {
+    fields.ASSIGNED_BY_ID = process.env.BITRIX24_ASSIGNED_BY_ID;
+  }
+
+  const extraFields = toArray(process.env.BITRIX24_EXTRA_FIELDS);
+  extraFields.forEach((entry) => {
+    const separatorIndex = entry.indexOf(":");
+    if (separatorIndex > 0) {
+      const key = entry.slice(0, separatorIndex).trim();
+      const value = entry.slice(separatorIndex + 1).trim();
+      if (key && value) fields[key] = value;
+    }
+  });
 
   return {
-    convert: "0",
-    lead: crmLead,
+    fields,
+    params: { REGISTER_SONET_EVENT: "Y" },
   };
 }
 
-async function sendLeadToTeamSale(lead) {
-  const apiKey = process.env.TEAMSALE_API_KEY || process.env.ZADARMA_API_KEY;
-  const apiSecret = process.env.TEAMSALE_API_SECRET || process.env.ZADARMA_API_SECRET;
-  const apiBase = (process.env.TEAMSALE_API_BASE || "https://api.zadarma.com").replace(/\/$/, "");
-  const method = process.env.TEAMSALE_LEADS_METHOD || "/v1/zcrm/leads";
+function getBitrix24LeadUrl() {
+  const webhookUrl = String(process.env.BITRIX24_WEBHOOK_URL || "").trim();
+  if (!webhookUrl) return "";
+  if (/crm\.lead\.add(?:\.json)?$/i.test(webhookUrl)) return webhookUrl;
+  return `${webhookUrl.replace(/\/$/, "")}/crm.lead.add.json`;
+}
 
-  if (!apiKey || !apiSecret) {
-    return { skipped: true, reason: "TEAMSALE_API_KEY/TEAMSALE_API_SECRET are not configured" };
+async function sendLeadToBitrix24(lead) {
+  const leadUrl = getBitrix24LeadUrl();
+
+  if (!leadUrl) {
+    return { skipped: true, reason: "BITRIX24_WEBHOOK_URL is not configured" };
   }
 
-  const payload = buildTeamSaleLeadPayload(lead);
-  const flatPayload = flattenParams(payload);
-  const body = encodeForm(flatPayload);
-  const authorization = createTeamSaleAuthHeader(method, payload);
+  const payload = buildBitrix24LeadPayload(lead);
 
-  if (!authorization) {
-    return { skipped: true, reason: "TeamSale authorization is not configured" };
-  }
-
-  const response = await fetch(`${apiBase}${method}`, {
+  const response = await fetch(leadUrl, {
     method: "POST",
     headers: {
-      Authorization: authorization,
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/json",
     },
-    body,
+    body: JSON.stringify(payload),
   });
 
   const text = await response.text();
@@ -247,8 +210,8 @@ async function sendLeadToTeamSale(lead) {
     data = { raw: text };
   }
 
-  if (!response.ok || data.status === "error") {
-    throw new Error(`TeamSale CRM error: ${JSON.stringify(data).slice(0, 500)}`);
+  if (!response.ok || data.error) {
+    throw new Error(`Bitrix24 CRM error: ${JSON.stringify(data).slice(0, 500)}`);
   }
 
   return { ok: true, response: data };
@@ -260,7 +223,7 @@ async function saveLead(rawLead) {
   await fsp.appendFile(LEADS_FILE, `${JSON.stringify(lead)}\n`, "utf8");
 
   try {
-    const crmResult = await sendLeadToTeamSale(lead);
+    const crmResult = await sendLeadToBitrix24(lead);
     if (!crmResult.skipped) {
       await fsp.appendFile(path.join(DATA_DIR, "crm-sync.jsonl"), `${JSON.stringify({ createdAt: new Date().toISOString(), leadPhone: lead.phone || "", result: crmResult })}\n`, "utf8");
     }
