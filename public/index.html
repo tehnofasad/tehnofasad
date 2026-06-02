@@ -895,17 +895,30 @@
       </button>
       <div class="ai-chat__panel" id="ai-chat-panel" aria-hidden="true">
         <header class="ai-chat__header">
-          <div class="ai-chat__avatar" aria-hidden="true">TF</div>
+          <div class="ai-chat__avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect x="5" y="10" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 6v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="5" r="2" stroke="currentColor" stroke-width="2"/>
+              <path d="M9 14h.01M15 14h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
           <div>
             <strong>TEHNOFASAD AI</strong>
             <span>Senior consultant · CRM ready</span>
           </div>
           <em class="ai-chat__status">online</em>
+          <a class="ai-chat__phone" href="tel:+37379155791" aria-label="Sunati TEHNOFASAD">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.63 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.15a2 2 0 0 1 2.11-.45c.83.3 1.7.51 2.6.63A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            +373 791 55 791
+          </a>
           <button class="ai-chat__close" type="button" aria-label="Inchide chatul">x</button>
         </header>
         <div class="ai-chat__messages" aria-live="polite">
           <div class="ai-chat__message ai-chat__message--bot">
-            <span>Buna ziua. Sunt consultantul AI TEHNOFASAD. Va ajut sa alegeti panouri sandwich, acoperis, grosime, cantitate si livrare. Daca imi trimiteti telefonul si parametrii proiectului, creez automat cererea in CRM pentru specialist.</span>
+            <span>Bună ziua! Sunt consultantul AI TEHNOFASAD. Vă ajut să alegeți materialele și calculez estimarea pentru proiectul dvs.<br><br>Pentru ce tip de construcție aveți nevoie de materiale?</span>
             <small>acum</small>
           </div>
         </div>
@@ -929,18 +942,20 @@
           <button type="submit">Trimite in CRM</button>
         </form>
         <div class="ai-chat__quick-menu" aria-label="Meniu rapid AI">
-          <button type="button" data-ai-prompt="Vreau oferta pentru panouri sandwich. Ce date trebuie sa trimit?">Oferta panouri</button>
-          <button type="button" data-ai-prompt="Ajuta-ma sa aleg intre panou de perete si panou de acoperis.">Alegere panou</button>
-          <button type="button" data-ai-prompt="Ce grosime de panou sandwich imi recomanzi pentru proiect?">Grosime</button>
-          <button type="button" data-ai-prompt="Cum pot calcula acoperisul in 3D si ce date sunt necesare?">3D acoperis</button>
-          <button type="button" data-ai-prompt="Cum verificam disponibilitatea si livrarea materialelor?">Stoc si livrare</button>
-          <button type="button" data-ai-prompt="Vreau sa fiu sunat de un specialist TEHNOFASAD.">Callback</button>
-          <button type="button" data-ai-prompt="Am o hala 20x40. Ajuta-ma sa estimez suprafata si ce date lipsesc.">Obiect 20x40</button>
+          <button type="button" data-ai-prompt="Hală industrială">Hală industrială</button>
+          <button type="button" data-ai-prompt="Depozit / magazie">Depozit / magazie</button>
+          <button type="button" data-ai-prompt="Acoperiș casă">Acoperiș casă</button>
+          <button type="button" data-ai-prompt="Gard / împrejmuire">Gard / împrejmuire</button>
         </div>
         <form class="ai-chat__form">
-          <input name="message" type="text" autocomplete="off" placeholder="Ex: hala 20x40, panouri 100 mm..." required>
+          <input name="message" type="text" autocomplete="off" placeholder="Scrieți mesajul dvs..." required>
           <button class="ai-chat__reset" type="button" data-ai-reset aria-label="Reset chat">↻</button>
-          <button type="submit">Trimite</button>
+          <button class="ai-chat__send" type="submit" aria-label="Trimite mesajul">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="m22 2-7 20-4-9-9-4 20-7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M22 2 11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
         </form>
       </div>
     </section>

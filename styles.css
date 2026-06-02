@@ -1884,6 +1884,11 @@ h3 {
   transform: scale(0.9);
 }
 
+body.ai-chat-open .floating-messengers {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .floating-messengers__toggle svg {
   width: 28px;
   height: 28px;
@@ -1893,7 +1898,7 @@ h3 {
   position: fixed;
   right: 22px;
   bottom: 22px;
-  z-index: 18;
+  z-index: 1200;
 }
 
 .ai-chat__toggle {
@@ -2314,6 +2319,259 @@ h3 {
   color: rgba(255, 255, 255, 0.86);
   background: rgba(255, 255, 255, 0.1);
   font-size: 1.05rem;
+}
+
+.ai-chat__avatar svg,
+.ai-chat__phone svg,
+.ai-chat__send svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ai-chat__phone {
+  display: inline-flex;
+  min-height: 38px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(59, 130, 246, 0.8);
+  border-radius: 10px;
+  padding: 0 13px;
+  color: #8cc7ff;
+  background: rgba(29, 78, 216, 0.18);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.ai-chat__phone:hover {
+  color: #d8efff;
+  background: rgba(37, 99, 235, 0.28);
+}
+
+.ai-chat.is-open .ai-chat__panel {
+  display: flex;
+}
+
+.ai-chat.is-open .ai-chat__toggle {
+  display: none;
+}
+
+.ai-chat__panel {
+  width: min(768px, calc(100vw - 20px));
+  height: min(650px, calc(100vh - 28px));
+  flex-direction: column;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 18px;
+  background: #0f172a;
+  box-shadow: 0 30px 90px rgba(2, 6, 23, 0.5);
+}
+
+.ai-chat__header {
+  min-height: 98px;
+  padding: 24px 24px 18px;
+  background: #111a2d;
+}
+
+.ai-chat__avatar {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border: 0;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  box-shadow: none;
+}
+
+.ai-chat__header > .ai-chat__avatar {
+  flex: 0 0 46px;
+}
+
+.ai-chat__header strong {
+  font-size: 1.08rem;
+  line-height: 1.15;
+}
+
+.ai-chat__header span {
+  position: relative;
+  margin-top: 5px;
+  padding-left: 12px;
+  color: #38bdf8;
+  font-size: 0;
+  font-weight: 700;
+}
+
+.ai-chat__header span::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  transform: translateY(-50%);
+  content: "";
+}
+
+.ai-chat__header span::after {
+  font-size: 0.82rem;
+  content: "Consultant · online";
+}
+
+.ai-chat__status,
+.ai-chat__manager,
+.ai-chat__tools,
+.ai-chat__lead,
+.ai-chat__form .ai-chat__reset {
+  display: none;
+}
+
+.ai-chat__close {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: rgba(226, 232, 240, 0.78);
+  background: rgba(148, 163, 184, 0.12);
+  font-size: 1rem;
+}
+
+.ai-chat__close:hover {
+  color: #fff;
+  background: rgba(148, 163, 184, 0.22);
+}
+
+.ai-chat__messages {
+  position: relative;
+  flex: 1 1 auto;
+  max-height: none;
+  min-height: 0;
+  align-content: start;
+  align-items: start;
+  gap: 12px;
+  padding: 20px 30px 12px 76px;
+  background: #0f172a;
+}
+
+.ai-chat__message {
+  position: relative;
+  max-width: min(78%, 566px);
+  border-radius: 15px;
+  padding: 14px 18px;
+  line-height: 1.62;
+}
+
+.ai-chat__message span {
+  white-space: pre-wrap;
+}
+
+.ai-chat__message small {
+  display: none;
+}
+
+.ai-chat__message--bot,
+.ai-chat__message--typing {
+  border: 1px solid #334155;
+  color: #e8f1ff;
+  background: #1e293b;
+}
+
+.ai-chat__message--bot::before,
+.ai-chat__message--typing::before {
+  position: absolute;
+  left: -48px;
+  bottom: 9px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  color: #fff;
+  background: #1d75f0;
+  content: "AI";
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.ai-chat__message--user {
+  border-radius: 15px 15px 4px 15px;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+}
+
+.ai-chat__quick-menu {
+  gap: 8px;
+  border-top: 0;
+  padding: 0 30px 26px 76px;
+  background: #0f172a;
+}
+
+.ai-chat__quick-menu button {
+  min-height: 40px;
+  border-color: #334155;
+  border-radius: 10px;
+  padding: 0 15px;
+  color: #a9b5c6;
+  background: transparent;
+  font-size: 0.93rem;
+  font-weight: 600;
+}
+
+.ai-chat__quick-menu button:hover {
+  border-color: #3b82f6;
+  color: #bfdbfe;
+  background: rgba(30, 58, 95, 0.8);
+}
+
+.ai-chat__form {
+  position: relative;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  border-top: 1px solid rgba(30, 41, 59, 0.9);
+  padding: 15px 30px 49px;
+  background: #0f172a;
+}
+
+.ai-chat__form::after {
+  position: absolute;
+  right: 0;
+  bottom: 24px;
+  left: 0;
+  color: #334155;
+  font-size: 0.78rem;
+  text-align: center;
+  content: "TEHNOFASAD · Bălți, str. Lev Dovator 1 · +373 791 55 791";
+  pointer-events: none;
+}
+
+.ai-chat__form input {
+  min-height: 52px;
+  border: 1px solid #334155;
+  border-radius: 11px;
+  padding: 0 18px;
+  color: #e2e8f0;
+  background: #1e293b;
+  font-size: 1rem;
+}
+
+.ai-chat__form input::placeholder {
+  color: #94a3b8;
+}
+
+.ai-chat__form button.ai-chat__send {
+  width: 54px;
+  min-height: 52px;
+  border-radius: 12px;
+  padding: 0;
+  color: #536174;
+  background: #1e293b;
+}
+
+.ai-chat__form button.ai-chat__send:hover {
+  color: #fff;
+  background: #2563eb;
 }
 
 @keyframes aiPanelIn {

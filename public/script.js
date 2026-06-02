@@ -321,13 +321,10 @@ function currentText(key) {
 
 function updateAiQuickMenu(lang) {
   const roItems = [
-    ["Oferta panouri", "Vreau oferta pentru panouri sandwich. Ce date trebuie sa trimit?"],
-    ["Alegere panou", "Ajuta-ma sa aleg intre panou de perete si panou de acoperis."],
-    ["Grosime", "Ce grosime de panou sandwich imi recomanzi pentru proiect?"],
-    ["3D acoperis", "Cum pot calcula acoperisul in 3D si ce date sunt necesare?"],
-    ["Stoc si livrare", "Cum verificam disponibilitatea si livrarea materialelor?"],
-    ["Callback", "Vreau sa fiu sunat de un specialist TEHNOFASAD."],
-    ["Obiect 20x40", "Am o hala 20x40. Ajuta-ma sa estimez suprafata si ce date lipsesc."],
+    ["Hala industriala", "Hala industriala"],
+    ["Depozit / magazie", "Depozit / magazie"],
+    ["Acoperis casa", "Acoperis casa"],
+    ["Gard / imprejmuire", "Gard / imprejmuire"],
   ];
   const ruItems = [
     ["Цена панелей", "Хочу получить предложение на сэндвич-панели. Какие данные нужно отправить?"],
@@ -338,11 +335,20 @@ function updateAiQuickMenu(lang) {
     ["Обратный звонок", "Хочу, чтобы специалист TEHNOFASAD мне перезвонил."],
     ["Объект 20x40", "У меня ангар 20x40. Помоги оценить площадь и какие данные еще нужны."],
   ];
-  const items = lang === "ru" ? ruItems : roItems;
+  const displayItems = lang === "ru" ? [
+    ["Ангар", "Ангар промышленный"],
+    ["Склад", "Склад / помещение"],
+    ["Крыша дома", "Крыша дома"],
+    ["Забор", "Забор / ограждение"],
+  ] : roItems;
   aiQuickButtons.forEach((button, index) => {
-    if (!items[index]) return;
-    button.textContent = items[index][0];
-    button.dataset.aiPrompt = items[index][1];
+    if (!displayItems[index]) {
+      button.hidden = true;
+      return;
+    }
+    button.hidden = false;
+    button.textContent = displayItems[index][0];
+    button.dataset.aiPrompt = displayItems[index][1];
   });
 }
 
@@ -507,6 +513,11 @@ function getAiMessageTime() {
 }
 
 function getAiWelcomeText(lang) {
+  if (lang === "ru") {
+    return "Здравствуйте! Я AI-консультант TEHNOFASAD. Помогу выбрать материалы и рассчитать ориентир для проекта.\n\nДля какого типа объекта нужны материалы?";
+  }
+  return "Buna ziua! Sunt consultantul AI TEHNOFASAD. Va ajut sa alegeti materialele si calculez estimarea pentru proiectul dvs.\n\nPentru ce tip de constructie aveti nevoie de materiale?";
+
   return lang === "ru"
     ? "Здравствуйте. Я AI-консультант TEHNOFASAD. Помогу выбрать панели, кровлю, толщину, количество и доставку. Если отправите телефон и параметры проекта, я создам заявку в CRM для специалиста."
     : "Buna ziua. Sunt consultantul AI TEHNOFASAD. Va ajut sa alegeti panouri sandwich, acoperis, grosime, cantitate si livrare. Daca imi trimiteti telefonul si parametrii proiectului, creez automat cererea in CRM pentru specialist.";
@@ -648,6 +659,7 @@ function appendAiCrmCard(data) {
 function setAiChatOpen(isOpen) {
   if (!aiChat || !aiChatToggle || !aiChatPanel) return;
   aiChat.classList.toggle("is-open", isOpen);
+  document.body.classList.toggle("ai-chat-open", isOpen);
   aiChatToggle.setAttribute("aria-expanded", String(isOpen));
   aiChatPanel.setAttribute("aria-hidden", String(!isOpen));
   if (isOpen) {
