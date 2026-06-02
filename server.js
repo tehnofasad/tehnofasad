@@ -6,8 +6,7 @@ const zlib = require("zlib");
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
-const DATA_DIR = path.join(__dirname, "data");
-const LEADS_FILE = path.join(DATA_DIR, "leads.jsonl");
+const DATA_DIR = process.env.VERCEL ? path.join("/tmp", "tehnofasad-data") : path.join(__dirname, "data");
 const MAX_BODY_SIZE = 1024 * 64;
 const RATE_WINDOW_MS = 60_000;
 const RATE_MAX_REQUESTS = 10;
@@ -115,6 +114,15 @@ function sanitizeLead(rawLead) {
   return lead;
 }
 
+async function appendLeadLog(fileName, payload) {
+  try {
+    await fsp.mkdir(DATA_DIR, { recursive: true });
+    await fsp.appendFile(path.join(DATA_DIR, fileName), `${JSON.stringify(payload)}\n`, "utf8");
+  } catch (error) {
+    console.error(`Lead log write failed: ${error.message}`);
+  }
+}
+
 function toArray(value) {
   return String(value || "")
     .split(",")
@@ -219,16 +227,15 @@ async function sendLeadToBitrix24(lead) {
 
 async function saveLead(rawLead) {
   const lead = sanitizeLead(rawLead);
-  await fsp.mkdir(DATA_DIR, { recursive: true });
-  await fsp.appendFile(LEADS_FILE, `${JSON.stringify(lead)}\n`, "utf8");
+  await appendLeadLog("leads.jsonl", lead);
 
   try {
     const crmResult = await sendLeadToBitrix24(lead);
     if (!crmResult.skipped) {
-      await fsp.appendFile(path.join(DATA_DIR, "crm-sync.jsonl"), `${JSON.stringify({ createdAt: new Date().toISOString(), leadPhone: lead.phone || "", result: crmResult })}\n`, "utf8");
+      await appendLeadLog("crm-sync.jsonl", { createdAt: new Date().toISOString(), leadPhone: lead.phone || "", result: crmResult });
     }
   } catch (error) {
-    await fsp.appendFile(path.join(DATA_DIR, "crm-errors.jsonl"), `${JSON.stringify({ createdAt: new Date().toISOString(), leadPhone: lead.phone || "", error: error.message })}\n`, "utf8");
+    await appendLeadLog("crm-errors.jsonl", { createdAt: new Date().toISOString(), leadPhone: lead.phone || "", error: error.message });
   }
 
   return lead;
