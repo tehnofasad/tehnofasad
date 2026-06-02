@@ -322,17 +322,123 @@ function extractLeadFromMessage(message) {
   };
 }
 
+function parseNumber(value) {
+  return Number(String(value || "").replace(",", "."));
+}
+
+function analyzeProjectMessage(message) {
+  const text = String(message || "");
+  const lower = text.toLowerCase();
+  const dimensionsMatch = text.match(/(\d+(?:[.,]\d+)?)\s*[xх×]\s*(\d+(?:[.,]\d+)?)(?:\s*[xх×]\s*(\d+(?:[.,]\d+)?))?/i);
+  const explicitAreaMatch = text.match(/(\d+(?:[.,]\d+)?)\s*(m2|m²|м2|м²|mp|m\.p\.)/i);
+  const thicknessMatch = text.match(/(\d{2,3})\s*(mm|мм|milimetri)/i);
+  const isRoof = /(roof|acoperis|acoperiș|кры|кров)/i.test(lower);
+  const isWall = /(wall|perete|стен|hala|hală|ангар|склад|depozit)/i.test(lower);
+  const result = {
+    objectType: "",
+    dimensions: "",
+    length: null,
+    width: null,
+    height: null,
+    explicitArea: explicitAreaMatch ? parseNumber(explicitAreaMatch[1]) : null,
+    calculatedArea: null,
+    wallArea: null,
+    roofArea: null,
+    thickness: thicknessMatch ? `${thicknessMatch[1]} ${thicknessMatch[2]}` : "",
+    assumptions: [],
+    missing: [],
+  };
+
+  if (/hala|hală|ангар|склад|depozit/i.test(lower)) result.objectType = "industrial/agricultural hall";
+  if (/casa|дом|house/i.test(lower)) result.objectType = "house";
+  if (/garaj|гараж/i.test(lower)) result.objectType = "garage";
+
+  if (dimensionsMatch) {
+    result.length = parseNumber(dimensionsMatch[1]);
+    result.width = parseNumber(dimensionsMatch[2]);
+    result.height = dimensionsMatch[3] ? parseNumber(dimensionsMatch[3]) : null;
+    result.dimensions = dimensionsMatch[0];
+    result.roofArea = Math.round(result.length * result.width);
+
+    if (result.height) {
+      result.wallArea = Math.round(2 * (result.length + result.width) * result.height);
+    }
+
+    if (isRoof && result.roofArea) result.calculatedArea = result.roofArea;
+    if (isWall && result.wallArea) result.calculatedArea = result.wallArea;
+    if (!result.calculatedArea && result.roofArea) {
+      result.calculatedArea = result.roofArea;
+      result.assumptions.push("dimensions treated as plan/roof area; wall area needs height");
+    }
+  }
+
+  if (!result.calculatedArea && result.explicitArea) {
+    result.calculatedArea = Math.round(result.explicitArea);
+  }
+
+  if (result.length && result.width && !result.height && isWall) {
+    result.missing.push("height for wall-panel area");
+  }
+
+  if (!result.thickness) result.missing.push("panel thickness");
+  if (!/\+?\d[\d\s()-]{7,}\d/.test(text)) result.missing.push("phone");
+
+  return result;
+}
+
+function getPriceRangeMdl(area) {
+  const min = Number(process.env.PANEL_PRICE_MIN_MDL_M2 || 0);
+  const max = Number(process.env.PANEL_PRICE_MAX_MDL_M2 || 0);
+  if (!area || !min || !max || max < min) return null;
+  return {
+    min: Math.round(area * min),
+    max: Math.round(area * max),
+    unitMin: min,
+    unitMax: max,
+  };
+}
+
+function buildManagerContext(message) {
+  const analysis = analyzeProjectMessage(message);
+  const priceRange = getPriceRangeMdl(analysis.calculatedArea);
+  const parts = [];
+
+  if (analysis.objectType) parts.push(`object_type=${analysis.objectType}`);
+  if (analysis.dimensions) parts.push(`dimensions=${analysis.dimensions}`);
+  if (analysis.roofArea) parts.push(`plan_or_roof_area_m2=${analysis.roofArea}`);
+  if (analysis.wallArea) parts.push(`wall_area_m2=${analysis.wallArea}`);
+  if (analysis.calculatedArea) parts.push(`suggested_area_m2=${analysis.calculatedArea}`);
+  if (analysis.thickness) parts.push(`thickness=${analysis.thickness}`);
+  if (priceRange) parts.push(`optional_price_range_mdl=${priceRange.min}-${priceRange.max} based on ${priceRange.unitMin}-${priceRange.unitMax} MDL/m2`);
+  if (analysis.assumptions.length) parts.push(`assumptions=${analysis.assumptions.join("; ")}`);
+  if (analysis.missing.length) parts.push(`missing=${analysis.missing.join(", ")}`);
+
+  return {
+    analysis,
+    priceRange,
+    text: parts.length ? `Manager calculator context: ${parts.join(" | ")}` : "",
+  };
+}
+
 function fallbackAiReply(message, lang) {
   const text = String(message || "");
   const isRu = lang === "ru" || /[а-яё]/i.test(text);
   const extractedLead = extractLeadFromMessage(message);
   const wantsOffer = /(цена|стоим|заказ|заявк|позвон|оферт|pret|oferta|comand|sunati|apel|calcul)/i.test(text);
+  const managerContext = buildManagerContext(text);
   let answer;
 
   if (extractedLead && wantsOffer) {
     answer = isRu
       ? "Принял данные для заявки. Специалист TEHNOFASAD проверит наличие, уточнит параметры и свяжется с вами. Если есть возможность, допишите тип панели, толщину, количество м2 и город."
       : "Am preluat datele pentru cerere. Specialistul TEHNOFASAD va verifica disponibilitatea, va confirma parametrii si va va contacta. Daca puteti, scrieti tipul panoului, grosimea, cantitatea m2 si localitatea.";
+  } else if (managerContext.analysis.calculatedArea) {
+    const area = managerContext.analysis.calculatedArea;
+    const range = managerContext.priceRange;
+    const rangeText = range ? ` Orientativ: ${range.min}-${range.max} MDL, inainte de confirmarea stocului.` : "";
+    answer = isRu
+      ? `Предварительно вижу площадь около ${area} м2. Для точного предложения нужны тип панели, толщина, город и телефон.`
+      : `Estimativ, suprafata este aproximativ ${area} m2.${rangeText} Pentru oferta exacta am nevoie de tipul panoului, grosime, localitate si telefon.`;
   } else {
     answer = isRu
       ? "Я AI-консультант TEHNOFASAD. Помогаю выбрать сэндвич-панели, кровельные материалы, водостоки и подготовить заявку. Для точного предложения напишите: тип материала, толщина, количество м2, город и телефон."
@@ -360,6 +466,7 @@ async function callOpenAiAgent(messages, lang) {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-5.2";
   const lastMessage = messages[messages.length - 1]?.content || "";
+  const managerContext = buildManagerContext(lastMessage);
 
   if (!apiKey) {
     return fallbackAiReply(lastMessage, lang);
@@ -381,6 +488,9 @@ async function callOpenAiAgent(messages, lang) {
     "- If data is missing, ask for the next 1-3 most important missing fields, not a long questionnaire.",
     "- Act like an account manager: summarize what is already known, then ask only what is missing.",
     "- When enough information exists except phone, ask for phone to create the CRM request.",
+    "- Use the Manager calculator context when present. If dimensions are given, calculate/confirm area before asking for phone.",
+    "- Give an approximate MDL range only if optional_price_range_mdl is present in the manager context. Otherwise say price is confirmed by stock and parameters.",
+    "- For a hall like 20x40 without height: plan/roof area is length*width; wall-panel area requires height. Explain this briefly and ask for height if wall panels are needed.",
     "- If the user already gave phone plus a buying intent, confirm that the request was accepted and say a specialist will contact them.",
     "Return ONLY valid JSON, no markdown, no prose outside JSON.",
     "JSON shape: {\"answer\":\"string\",\"lead\":null or {\"name\":\"\",\"phone\":\"\",\"email\":\"\",\"material\":\"\",\"quantity\":\"\",\"thickness\":\"\",\"location\":\"\",\"comment\":\"\",\"source\":\"ai-chat\"}}.",
@@ -398,6 +508,7 @@ async function callOpenAiAgent(messages, lang) {
       model,
       input: [
         { role: "system", content: systemPrompt },
+        ...(managerContext.text ? [{ role: "system", content: managerContext.text }] : []),
         ...messages.slice(-10).map((message) => ({
           role: message.role === "assistant" ? "assistant" : "user",
           content: String(message.content || "").slice(0, 1200),

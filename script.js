@@ -327,6 +327,7 @@ function updateAiQuickMenu(lang) {
     ["3D acoperis", "Cum pot calcula acoperisul in 3D si ce date sunt necesare?"],
     ["Stoc si livrare", "Cum verificam disponibilitatea si livrarea materialelor?"],
     ["Callback", "Vreau sa fiu sunat de un specialist TEHNOFASAD."],
+    ["Obiect 20x40", "Am o hala 20x40. Ajuta-ma sa estimez suprafata si ce date lipsesc."],
   ];
   const ruItems = [
     ["Цена панелей", "Хочу получить предложение на сэндвич-панели. Какие данные нужно отправить?"],
@@ -335,6 +336,7 @@ function updateAiQuickMenu(lang) {
     ["3D крыша", "Как рассчитать крышу в 3D-конфигураторе и какие данные нужны?"],
     ["Склад/доставка", "Как проверить наличие и доставку материалов?"],
     ["Обратный звонок", "Хочу, чтобы специалист TEHNOFASAD мне перезвонил."],
+    ["Объект 20x40", "У меня ангар 20x40. Помоги оценить площадь и какие данные еще нужны."],
   ];
   const items = lang === "ru" ? ruItems : roItems;
   aiQuickButtons.forEach((button, index) => {
