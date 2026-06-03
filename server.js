@@ -183,7 +183,10 @@ function generateZadarmaAuth(urlPath, params, key, secret) {
   const dataToSign = urlPath + queryString + md5hash;
   const hmac = crypto.createHmac("sha1", secret).update(dataToSign).digest("base64");
   
-  return `${key}:${hmac}`;
+  return {
+    authHeader: `${key}:${hmac}`,
+    queryString: queryString
+  };
 }
 
 async function sendLeadToTeamsale(lead) {
@@ -203,9 +206,10 @@ async function sendLeadToTeamsale(lead) {
     try {
       const urlObj = new URL(webhookUrl);
       const urlPath = urlObj.pathname;
-      headers["Authorization"] = generateZadarmaAuth(urlPath, payload, zadarmaKey, zadarmaSecret);
+      const authData = generateZadarmaAuth(urlPath, payload, zadarmaKey, zadarmaSecret);
+      headers["Authorization"] = authData.authHeader;
       headers["Content-Type"] = "application/x-www-form-urlencoded";
-      body = new URLSearchParams(payload).toString();
+      body = authData.queryString;
     } catch (e) {
       console.error("Error generating Zadarma auth:", e);
     }
