@@ -145,8 +145,69 @@ function buildLeadComment(lead) {
   return comment || "Lead TEHNOFASAD";
 }
 
+function normalizeTeamsaleSource(source) {
+  const value = String(source || "").trim();
+  const allowedSources = new Set(["manual", "call_incoming", "call_outgoing", "form"]);
+  return allowedSources.has(value) ? value : "form";
+}
+
 function buildTeamsaleLeadPayload(lead) {
   const payload = {
+    convert: 0,
+    lead: {
+      name: lead.product ? `TEHNOFASAD: ${lead.product}` : (lead.name || "Client Website"),
+      comment: buildLeadComment(lead),
+      city: lead.location || "",
+      website: "https://tehnofasad.md/",
+      lead_source: normalizeTeamsaleSource(process.env.TEAMSALE_SOURCE_ID || lead.source),
+      phones: lead.phone ? [{ type: "work", phone: lead.phone }] : [],
+      contacts: lead.email ? [{ type: "email_work", value: lead.email }] : []
+    }
+  };
+
+  const extraFields = toArray(process.env.TEAMSALE_EXTRA_FIELDS);
+  extraFields.forEach((entry) => {
+    const separatorIndex = entry.indexOf(":");
+    if (separatorIndex > 0) {
+      const key = entry.slice(0, separatorIndex).trim();
+      const value = entry.slice(separatorIndex + 1).trim();
+      if (key && value) payload.lead[key] = value;
+    }
+  });
+
+  return payload;
+}
+
+function encodeFormPart(value) {
+  return encodeURIComponent(String(value))
+    .replace(/%20/g, "+")
+    .replace(/[!'()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
+}
+
+function buildFormPairs(value, prefix) {
+  if (value === undefined || value === null) return [];
+
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => buildFormPairs(item, `${prefix}[${index}]`));
+  }
+
+  if (typeof value === "object") {
+    return Object.keys(value)
+      .sort()
+      .flatMap((key) => buildFormPairs(value[key], prefix ? `${prefix}[${key}]` : key));
+  }
+
+  return [[prefix, value]];
+}
+
+function buildPhpQuery(params) {
+  return buildFormPairs(params, "")
+    .map(([key, value]) => `${encodeFormPart(key)}=${encodeFormPart(value)}`)
+    .join("&");
+}
+
+function buildLegacyTeamsaleLeadPayload(lead) {
+  return {
     title: lead.product ? `TEHNOFASAD: ${lead.product}` : "TEHNOFASAD: solicitare de pe site",
     name: lead.name || "Client Website",
     phone: lead.phone || "",
@@ -156,41 +217,23 @@ function buildTeamsaleLeadPayload(lead) {
     city: lead.location || "",
     website: "https://tehnofasad.md/"
   };
-
-  const extraFields = toArray(process.env.TEAMSALE_EXTRA_FIELDS);
-  extraFields.forEach((entry) => {
-    const separatorIndex = entry.indexOf(":");
-    if (separatorIndex > 0) {
-      const key = entry.slice(0, separatorIndex).trim();
-      const value = entry.slice(separatorIndex + 1).trim();
-      if (key && value) payload[key] = value;
-    }
-  });
-
-  return payload;
 }
 
 function generateZadarmaAuth(urlPath, params, key, secret) {
-  const sortedKeys = Object.keys(params).sort();
-  const sortedParams = {};
-  for (const k of sortedKeys) {
-    sortedParams[k] = params[k];
-  }
-  
-  // Create x-www-form-urlencoded query string
-  const queryString = new URLSearchParams(sortedParams).toString();
+  const queryString = buildPhpQuery(params);
   const md5hash = crypto.createHash("md5").update(queryString).digest("hex");
   const dataToSign = urlPath + queryString + md5hash;
-  const hmac = crypto.createHmac("sha1", secret).update(dataToSign).digest("base64");
+  const hmacHex = crypto.createHmac("sha1", secret).update(dataToSign).digest("hex");
+  const signature = Buffer.from(hmacHex).toString("base64");
   
   return {
-    authHeader: `${key}:${hmac}`,
+    authHeader: `${key}:${signature}`,
     queryString: queryString
   };
 }
 
 async function sendLeadToTeamsale(lead) {
-  const webhookUrl = String(process.env.TEAMSALE_WEBHOOK_URL || "").trim();
+  const webhookUrl = String(process.env.TEAMSALE_WEBHOOK_URL || "").trim().replace(/\/+$/, "");
   const zadarmaKey = String(process.env.ZADARMA_KEY || "").trim();
   const zadarmaSecret = String(process.env.ZADARMA_SECRET || "").trim();
 
@@ -198,7 +241,7 @@ async function sendLeadToTeamsale(lead) {
     return { skipped: true, reason: "TEAMSALE_WEBHOOK_URL is not configured" };
   }
 
-  const payload = buildTeamsaleLeadPayload(lead);
+  const payload = zadarmaKey && zadarmaSecret ? buildTeamsaleLeadPayload(lead) : buildLegacyTeamsaleLeadPayload(lead);
   let headers = { "Content-Type": "application/json" };
   let body = JSON.stringify(payload);
 
@@ -242,10 +285,16 @@ async function saveLead(rawLead) {
 
   try {
     const crmResult = await sendLeadToTeamsale(lead);
+    if (crmResult.skipped) {
+      console.error(`Teamsale CRM skipped: ${crmResult.reason}`);
+    }
     if (!crmResult.skipped) {
+      const crmLeadId = crmResult.response?.data?.id || crmResult.response?.result || "";
+      console.log(`Teamsale CRM sync success${crmLeadId ? `: ${crmLeadId}` : ""}`);
       await appendLeadLog("crm-sync.jsonl", { createdAt: new Date().toISOString(), leadPhone: lead.phone || "", result: crmResult });
     }
   } catch (error) {
+    console.error(`Teamsale CRM sync failed: ${error.message}`);
     await appendLeadLog("crm-errors.jsonl", { createdAt: new Date().toISOString(), leadPhone: lead.phone || "", error: error.message });
   }
 
