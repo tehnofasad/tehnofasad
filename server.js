@@ -144,69 +144,52 @@ function buildLeadComment(lead) {
   return comment || "Lead TEHNOFASAD";
 }
 
-function buildBitrix24LeadPayload(lead) {
-  const fields = {
-    TITLE: lead.product ? `TEHNOFASAD: ${lead.product}` : "TEHNOFASAD: solicitare de pe site",
-    NAME: lead.name || "",
-    COMMENTS: buildLeadComment(lead),
-    SOURCE_ID: process.env.BITRIX24_SOURCE_ID || "WEB",
-    STATUS_ID: process.env.BITRIX24_STATUS_ID || "NEW",
-    WEB: [{ VALUE: "https://tehnofasad.md/", VALUE_TYPE: "WORK" }],
+function buildTeamsaleLeadPayload(lead) {
+  const payload = {
+    title: lead.product ? `TEHNOFASAD: ${lead.product}` : "TEHNOFASAD: solicitare de pe site",
+    name: lead.name || "Client Website",
+    phone: lead.phone || "",
+    email: lead.email || "",
+    comment: buildLeadComment(lead),
+    source: process.env.TEAMSALE_SOURCE_ID || lead.source || "WEB",
+    city: lead.location || "",
+    website: "https://tehnofasad.md/"
   };
 
-  if (lead.phone) {
-    fields.PHONE = [{ VALUE: lead.phone, VALUE_TYPE: "WORK" }];
-  }
-
-  if (lead.email) {
-    fields.EMAIL = [{ VALUE: lead.email, VALUE_TYPE: "WORK" }];
-  }
-
-  if (lead.location) {
-    fields.ADDRESS_CITY = lead.location;
-  }
-
-  if (process.env.BITRIX24_ASSIGNED_BY_ID) {
-    fields.ASSIGNED_BY_ID = process.env.BITRIX24_ASSIGNED_BY_ID;
-  }
-
-  const extraFields = toArray(process.env.BITRIX24_EXTRA_FIELDS);
+  const extraFields = toArray(process.env.TEAMSALE_EXTRA_FIELDS);
   extraFields.forEach((entry) => {
     const separatorIndex = entry.indexOf(":");
     if (separatorIndex > 0) {
       const key = entry.slice(0, separatorIndex).trim();
       const value = entry.slice(separatorIndex + 1).trim();
-      if (key && value) fields[key] = value;
+      if (key && value) payload[key] = value;
     }
   });
 
-  return {
-    fields,
-    params: { REGISTER_SONET_EVENT: "Y" },
-  };
+  return payload;
 }
 
-function getBitrix24LeadUrl() {
-  const webhookUrl = String(process.env.BITRIX24_WEBHOOK_URL || "").trim();
-  if (!webhookUrl) return "";
-  if (/crm\.lead\.add(?:\.json)?$/i.test(webhookUrl)) return webhookUrl;
-  return `${webhookUrl.replace(/\/$/, "")}/crm.lead.add.json`;
-}
+async function sendLeadToTeamsale(lead) {
+  const webhookUrl = String(process.env.TEAMSALE_WEBHOOK_URL || "").trim();
+  const apiKey = String(process.env.TEAMSALE_API_KEY || "").trim();
 
-async function sendLeadToBitrix24(lead) {
-  const leadUrl = getBitrix24LeadUrl();
-
-  if (!leadUrl) {
-    return { skipped: true, reason: "BITRIX24_WEBHOOK_URL is not configured" };
+  if (!webhookUrl) {
+    return { skipped: true, reason: "TEAMSALE_WEBHOOK_URL is not configured" };
   }
 
-  const payload = buildBitrix24LeadPayload(lead);
+  const payload = buildTeamsaleLeadPayload(lead);
+  
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  
+  if (apiKey) {
+    headers["Authorization"] = `Bearer ${apiKey}`;
+  }
 
-  const response = await fetch(leadUrl, {
+  const response = await fetch(webhookUrl, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(payload),
   });
 
@@ -218,8 +201,8 @@ async function sendLeadToBitrix24(lead) {
     data = { raw: text };
   }
 
-  if (!response.ok || data.error) {
-    throw new Error(`Bitrix24 CRM error: ${JSON.stringify(data).slice(0, 500)}`);
+  if (!response.ok || (data.status && data.status !== "success" && data.status !== "ok")) {
+    throw new Error(`Teamsale CRM error: ${JSON.stringify(data).slice(0, 500)}`);
   }
 
   return { ok: true, response: data };
@@ -230,7 +213,7 @@ async function saveLead(rawLead) {
   await appendLeadLog("leads.jsonl", lead);
 
   try {
-    const crmResult = await sendLeadToBitrix24(lead);
+    const crmResult = await sendLeadToTeamsale(lead);
     if (!crmResult.skipped) {
       await appendLeadLog("crm-sync.jsonl", { createdAt: new Date().toISOString(), leadPhone: lead.phone || "", result: crmResult });
     }
