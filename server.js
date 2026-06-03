@@ -419,10 +419,17 @@ function fallbackAiReply(message, lang) {
     return { answer, lead: extractedLead, crmData: buildAiCrmData(extractedLead, managerContext) };
   }
 
+  let specificProductMsg = "";
+  if (extractedLead?.material?.includes("roof")) {
+    specificProductMsg = isRu ? "Для расчета крыши вы можете использовать наш 3D конфигуратор на сайте. " : "Pentru calculul acoperisului puteti utiliza configuratorul nostru 3D de pe site. ";
+  } else if (extractedLead?.material?.includes("wall")) {
+    specificProductMsg = isRu ? "Для стеновых панелей важна толщина (от 40 до 100 мм). " : "Pentru panourile de perete este importanta grosimea (intre 40 si 100 mm). ";
+  }
+
   return {
     answer: isRu
-      ? "Я AI-менеджер TEHNOFASAD. Напишите тип объекта и размеры, например: ангар 20x40, панели 100 мм."
-      : "Sunt AI manager TEHNOFASAD. Scrieti tipul obiectului si dimensiunile, de exemplu: hala 20x40, panouri 100 mm.",
+      ? `${specificProductMsg}Я AI-менеджер TEHNOFASAD. Напишите тип объекта и размеры, например: ангар 20x40, панели 100 мм.`
+      : `${specificProductMsg}Sunt AI manager TEHNOFASAD. Scrieti tipul obiectului si dimensiunile, de exemplu: hala 20x40, panouri 100 mm.`,
     lead: extractedLead,
     crmData: buildAiCrmData(extractedLead, managerContext),
   };
@@ -436,17 +443,23 @@ function extractLeadFromMessage(message) {
   if (!phone) return null;
 
   const emailMatch = text.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i);
-  const quantityMatch = text.match(/(\d+(?:[.,]\d+)?)\s*(m2|m²|м2|м²|mp|m\.p\.|метр|metri)/i);
+  const quantityMatch = text.match(/(\d+(?:[.,]\d+)?)\s*(m2|m²|м2|м²|mp|m\.p\.|метр|metri|ml|мл|buc|шт)/i);
   const thicknessMatch = text.match(/(\d{2,3})\s*(mm|\u043c\u043c|milimetri)/i);
-  const knownLocationMatch = text.match(/\b(Chisinau|Chișinău|\u041a\u0438\u0448\u0438\u043d\u0435\u0432|\u041a\u0438\u0448\u0438\u043d\u0451\u0432|Balti|Bălți|\u0411\u0435\u043b\u044c\u0446\u044b|Orhei|\u041e\u0440\u0433\u0435\u0435\u0432|Ungheni|\u0423\u043d\u0433\u0435\u043d\u044b|Cahul|\u041a\u0430\u0433\u0443\u043b|Soroca|\u0421\u043e\u0440\u043e\u043a\u0438|Edinet|\u0415\u0434\u0438\u043d\u0435\u0446)\b/i);
-  const locationPhraseMatch = text.match(/(?:\u0433\u043e\u0440\u043e\u0434|localitate|localitatea|oras|oraș|in|în|\u0432)\s+([A-Za-z\u0400-\u04ffĂăÂâÎîȘșȚț -]{3,40})/i);
+  const knownLocationMatch = text.match(/\b(Chisinau|Chișinău|\u041a\u0438\u0448\u0438\u043d\u0435\u0432|\u041a\u0438\u0448\u0438\u043d\u0451\u0432|Balti|Bălți|\u0411\u0435\u043b\u044c\u0446\u044b|Orhei|\u041e\u0440\u0433\u0435\u0435\u0432|Ungheni|\u0423\u043d\u0433\u0435\u043d\u044b|Cahul|\u041a\u0430\u0433\u0443\u043b|Soroca|\u0421\u043e\u0440\u043e\u043a\u0438|Edinet|\u0415\u0434\u0438\u043d\u0435\u0446|Comrat|\u041a\u043e\u043c\u0440\u0430\u0442|Ceadir-Lunga|Drochia|\u0414\u0440\u043e\u043a\u0438\u044f|Floresti|Hincesti|Ialoveni|Nisporeni|Rezina|Riscani|Singerei|Straseni|Taraclia|Telenesti|Causeni|\u041a\u0430\u0443\u0448\u0430\u043d\u044b|Cimislia|Criuleni|Dubasari|Falesti|Glodeni|Leova|Ocnita|Stefan Voda|Soldanesti|Briceni|Donduseni|Cantemir|Anenii Noi)\b/i);
+  const locationPhraseMatch = text.match(/(?:\u0433\u043e\u0440\u043e\u0434|localitate|localitatea|oras|oraș|in|în|\u0432|din|город)\s+([A-Za-z\u0400-\u04ffĂăÂâÎîȘșȚț -]{3,40})/i);
   const nameMatch = text.match(/(?:\u043c\u0435\u043d\u044f \u0437\u043e\u0432\u0443\u0442|\u044f\s+|numele meu este|ma numesc|mă numesc|nume)\s+([A-Za-z\u0400-\u04ffĂăÂâÎîȘșȚț -]{2,40})/i);
+  const colorMatch = text.match(/RAL\s*(\d{4})/i) || text.match(/\b(rosu|roșu|alb|verde|albastru|gri|maro|negru|bej|красн|бел|зелен|син|сер|коричнев|черн|бежев)\w*/i);
 
   let material = "";
   if (/sandwich|\u0441\u044d\u043d\u0434\u0432\u0438\u0447|panou|panouri|\u043f\u0430\u043d\u0435\u043b/i.test(lower)) material = "sandwich panels";
   if (/acoperis|acoperiș|\u043a\u0440\u044b|roof/i.test(lower)) material = material ? `${material}, roof` : "roof";
   if (/perete|\u0441\u0442\u0435\u043d|wall/i.test(lower)) material = material ? `${material}, wall` : "wall";
-  if (/tigla|țigl|\u0447\u0435\u0440\u0435\u043f\u0438\u0446|metal tile/i.test(lower)) material = "metal tile";
+  if (/tigla metalica modulara|модульная металлочерепица/i.test(lower)) material = "modular metal tile";
+  else if (/tigla bituminoasa|битумная черепица|шинглас|shingles/i.test(lower)) material = "bituminous shingles";
+  else if (/tigla|țigl|\u0447\u0435\u0440\u0435\u043f\u0438\u0446|metal tile/i.test(lower)) material = "metal tile";
+  if (/sistem pluvia|водосточ|jgheab|желоб|burlan|труб.*водосток|drainage/i.test(lower)) material = material ? `${material}, drainage` : "drainage system";
+  if (/tabla profil|tablă profil|профнастил|профлист|profiled sheet/i.test(lower)) material = material ? `${material}, profiled sheet` : "profiled sheet";
+  if (/gard|забор|împrejmuire|ограждени/i.test(lower)) material = material ? `${material}, fence` : "fence/profiled sheet";
 
   return {
     name: nameMatch ? nameMatch[1].trim() : "",
@@ -455,6 +468,7 @@ function extractLeadFromMessage(message) {
     material,
     quantity: quantityMatch ? `${quantityMatch[1]} ${quantityMatch[2]}` : "",
     thickness: thicknessMatch ? `${thicknessMatch[1]} ${thicknessMatch[2]}` : "",
+    color: colorMatch ? colorMatch[0] : "",
     location: knownLocationMatch ? knownLocationMatch[0] : (locationPhraseMatch ? locationPhraseMatch[1].trim() : ""),
     comment: `AI chat lead: ${text.slice(0, 450)}`,
     source: "ai-chat",
@@ -532,7 +546,7 @@ function analyzeProjectMessage(message) {
     result.missing.push("confirm wall height");
   }
 
-  if (!result.thickness && result.materialIntent === "sandwich panels") result.missing.push("panel thickness");
+  if (!result.thickness && (result.materialIntent === "sandwich panels")) result.missing.push("panel thickness");
   if (!hasPhone) result.missing.push("phone");
 
   return result;
@@ -552,7 +566,7 @@ function parseAiJson(text) {
   }
 }
 
-async function callOpenAiAgent(messages, lang) {
+async function callOpenAiAgent(messages, lang, accumulatedLead) {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-5.2";
   const lastMessage = messages[messages.length - 1]?.content || "";
@@ -566,28 +580,74 @@ async function callOpenAiAgent(messages, lang) {
     "You are TEHNOFASAD AI Manager, a senior sales manager and technical consultant for a Moldova construction-materials company.",
     "Primary goal: manage the conversation like a real sales manager: greet, qualify the need, ask the next useful question, collect buying details, create a clean CRM lead, and hand off to a human specialist.",
     "Reply in the user's language. Use Russian for Cyrillic/Russian messages and Romanian for Romanian messages.",
-    "Company facts: TEHNOFASAD S.R.L.; phone +373 791 55 791; email info@tehnofasad.md; address mun. Balti, str. Lev Dovator 1; website tehnofasad.md.",
-    "Products: sandwich panels for walls, sandwich panels for roofs, metal tile, modular metal tile, bituminous shingles, profiled sheet, drainage systems, roof accessories.",
-    "Strong consultation rules:",
-    "- For sandwich panels, ask/track purpose, panel type wall/roof, thickness, quantity in m2, color if mentioned, city, pickup/delivery, phone.",
-    "- For roofs, ask/track roof type, roof area or dimensions, material, drainage, city, phone. Mention that the 3D configurator can estimate roof area and drainage length.",
-    "- Mission: qualify the client in about 4-5 messages, give useful value first, then collect phone.",
-    "- For price, stock, delivery, callback, order, reservation: collect phone and order parameters, then create a lead.",
-    "- Never invent exact prices, stock quantities, delivery price or final deadlines. Say a specialist confirms by real stock and parameters.",
-    "- Keep answers short, practical and sales-focused: 2-3 sentences unless the user asks for details.",
-    "- Always end with one clear next step or one targeted question. Avoid generic endings.",
-    "- If data is missing, ask for the next 1-3 most important missing fields, not a long questionnaire.",
+    "",
+    "=== COMPANY ===",
+    "TEHNOFASAD S.R.L.; phone +373 791 55 791; email info@tehnofasad.md; address mun. Balti, str. Lev Dovator 1; website tehnofasad.md.",
+    "Working hours: Mon-Fri 08:00-17:00, Sat 09:00-14:00.",
+    "",
+    "=== FULL PRODUCT CATALOG ===",
+    "1. Sandwich panels for WALLS — thickness 40/50/60/80/100 mm, mineral wool or PIR core, width 1000-1200 mm, length cut to order up to 12 m. For halls, warehouses, cold rooms, commercial buildings.",
+    "2. Sandwich panels for ROOFS — thickness 40/50/60/80/100 mm, trapezoidal profile, slope min 7 degrees. For industrial and commercial roofing.",
+    "3. Metal tile (tigla metalica) — 0.45-0.5 mm steel, polyester coating, various profiles (Monterrey, Cascade). For residential roofs.",
+    "4. Modular metal tile (tigla metalica modulara) — individual sheets ~1.2x0.7 m, easier transport and handling, same profiles as classic.",
+    "5. Bituminous shingles (tigla bituminoasa) — flexible roofing for complex geometries, mansards, residential.",
+    "6. Profiled sheet (tabla profilata) — C8/C10/C18/C21/HC35/HC44 profiles, for roofs, fences, facades, technical enclosures.",
+    "7. Drainage systems (sisteme pluviale) — gutters 125/150 mm, downpipes 87/100 mm, all fittings, metal or PVC.",
+    "8. Roof accessories — ridge caps, wind bars, valley trays, snow guards, fasteners, sealing tapes, under-roof membranes.",
+    "",
+    "=== AREA CALCULATION RULES ===",
+    "- Hall LxW: roof area = L*W*1.15 (15% reserve for overlaps/waste).",
+    "- Hall LxWxH: wall area = 2*(L+W)*H; total = wall + roof.",
+    "- If height not given for a hall, assume 6 m preliminary, but ASK to confirm.",
+    "- House roof: use the 3D configurator on the website for accurate calculation (section '3D acoperis').",
+    "- Fence: length in meters * fence height (usually 1.5-2.0 m).",
+    "",
+    "=== PRICING GUIDANCE ===",
+    "- Do NOT invent exact prices, stock quantities, delivery cost, or deadlines.",
+    "- When the calculator provides optional_price_range_mdl, share it as 'approximate material range' and note that the specialist will confirm by real stock.",
+    "- For materials without calculator data, say 'the specialist will calculate based on current stock prices'.",
+    "",
+    "=== SALES FLOW ===",
+    "- Qualify the client in 3-5 messages. Give useful value first (area calculation, product suggestion), then collect phone.",
+    "- Keep answers 2-3 sentences unless the user asks for details.",
+    "- Always end with one clear next step or one targeted question.",
+    "- If data is missing, ask for the next 1-2 most important fields, not a long questionnaire.",
     "- Act like an account manager: summarize what is already known, then ask only what is missing.",
-    "- When enough information exists except phone, ask for phone to create the CRM request.",
-    "- Use the Manager calculator context when present. If dimensions are given, calculate/confirm area before asking for phone.",
-    "- Give the approximate MDL range from optional_price_range_mdl when present, but do not expose unit rates.",
-    "- For a hall like 20x40: roof area includes 15% reserve; wall area uses height. If height is missing and the calculator assumed 6 m, say it is a preliminary assumption and ask to confirm height.",
-    "- If the user already gave phone plus a buying intent, confirm that the request was accepted and say a specialist will contact them.",
+    "- When enough info exists except phone, ask for phone to create the CRM request.",
+    "- If the user already gave phone + buying intent, confirm the request is accepted and a specialist will contact them.",
+    "- Mention the 3D roof configurator when relevant (roof projects, area questions).",
+    "",
+    "=== JSON OUTPUT ===",
     "Return ONLY valid JSON, no markdown, no prose outside JSON.",
-    "JSON shape: {\"answer\":\"string\",\"lead\":null or {\"name\":\"\",\"phone\":\"\",\"email\":\"\",\"material\":\"\",\"quantity\":\"\",\"thickness\":\"\",\"location\":\"\",\"comment\":\"\",\"source\":\"ai-chat\"}}.",
+    "JSON shape: {\"answer\":\"string\",\"lead\":null or {\"name\":\"\",\"phone\":\"\",\"email\":\"\",\"material\":\"\",\"quantity\":\"\",\"thickness\":\"\",\"color\":\"\",\"location\":\"\",\"comment\":\"\",\"source\":\"ai-chat\"}}.",
     "Create lead only when phone is present and the user asks for price, order, stock check, delivery, callback, reservation or calculation.",
-    "If there is no phone, lead must be null and answer should ask for phone only if the user wants an offer/order/callback.",
+    "If there is no phone, lead must be null.",
   ].join("\n");
+
+  const contextMessages = [];
+  contextMessages.push({ role: "system", content: systemPrompt });
+  if (managerContext.text) {
+    contextMessages.push({ role: "system", content: managerContext.text });
+  }
+  if (accumulatedLead) {
+    const parts = [];
+    if (accumulatedLead.name) parts.push(`name=${accumulatedLead.name}`);
+    if (accumulatedLead.phone) parts.push(`phone=${accumulatedLead.phone}`);
+    if (accumulatedLead.material) parts.push(`material=${accumulatedLead.material}`);
+    if (accumulatedLead.quantity) parts.push(`quantity=${accumulatedLead.quantity}`);
+    if (accumulatedLead.thickness) parts.push(`thickness=${accumulatedLead.thickness}`);
+    if (accumulatedLead.color) parts.push(`color=${accumulatedLead.color}`);
+    if (accumulatedLead.location) parts.push(`location=${accumulatedLead.location}`);
+    if (parts.length) {
+      contextMessages.push({ role: "system", content: `Accumulated client data from this session: ${parts.join(" | ")}. Use this to avoid re-asking known fields.` });
+    }
+  }
+  contextMessages.push(
+    ...messages.slice(-10).map((message) => ({
+      role: message.role === "assistant" ? "assistant" : "user",
+      content: String(message.content || "").slice(0, 1200),
+    }))
+  );
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -597,15 +657,8 @@ async function callOpenAiAgent(messages, lang) {
     },
     body: JSON.stringify({
       model,
-      input: [
-        { role: "system", content: systemPrompt },
-        ...(managerContext.text ? [{ role: "system", content: managerContext.text }] : []),
-        ...messages.slice(-10).map((message) => ({
-          role: message.role === "assistant" ? "assistant" : "user",
-          content: String(message.content || "").slice(0, 1200),
-        })),
-      ],
-      max_output_tokens: 650,
+      input: contextMessages,
+      max_output_tokens: 800,
     }),
   });
 
@@ -648,13 +701,14 @@ async function handleAiChat(request, response) {
     const raw = JSON.parse(body || "{}");
     const messages = Array.isArray(raw.messages) ? raw.messages : [];
     const lang = raw.lang === "ru" ? "ru" : "ro";
+    const accumulatedLead = raw.accumulatedLead || null;
 
     if (!messages.length) {
       sendJson(response, 400, { ok: false, message: "Message is required" });
       return;
     }
 
-    const aiResult = await callOpenAiAgent(messages, lang);
+    const aiResult = await callOpenAiAgent(messages, lang, accumulatedLead);
     const lastMessage = messages[messages.length - 1]?.content || "";
     aiResult.lead = aiResult.lead || extractLeadFromMessage(lastMessage);
     let leadCreated = false;

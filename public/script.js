@@ -16,6 +16,7 @@ const aiLeadForm = document.querySelector("[data-ai-lead-form]");
 const aiLeadButton = document.querySelector("[data-ai-action='lead']");
 const aiResetButton = document.querySelector("[data-ai-reset]");
 const aiChatHistory = [];
+let accumulatedLead = {};
 
 const i18n = {
   ro: {
@@ -336,10 +337,10 @@ function updateAiQuickMenu(lang) {
     ["Объект 20x40", "У меня ангар 20x40. Помоги оценить площадь и какие данные еще нужны."],
   ];
   const displayItems = lang === "ru" ? [
-    ["Ангар", "Ангар промышленный"],
-    ["Склад", "Склад / помещение"],
-    ["Крыша дома", "Крыша дома"],
-    ["Забор", "Забор / ограждение"],
+    ["Сэндвич-панели", "Сэндвич-панели"],
+    ["Кровля (профнастил)", "Кровля (профнастил)"],
+    ["Металлочерепица", "Металлочерепица"],
+    ["Забор / ограждение", "Забор / ограждение"],
   ] : roItems;
   aiQuickButtons.forEach((button, index) => {
     if (!displayItems[index]) {
@@ -517,10 +518,6 @@ function getAiWelcomeText(lang) {
     return "Здравствуйте! Я AI-консультант TEHNOFASAD. Помогу выбрать материалы и рассчитать ориентир для проекта.\n\nДля какого типа объекта нужны материалы?";
   }
   return "Buna ziua! Sunt consultantul AI TEHNOFASAD. Va ajut sa alegeti materialele si calculez estimarea pentru proiectul dvs.\n\nPentru ce tip de constructie aveti nevoie de materiale?";
-
-  return lang === "ru"
-    ? "Здравствуйте. Я AI-консультант TEHNOFASAD. Помогу выбрать панели, кровлю, толщину, количество и доставку. Если отправите телефон и параметры проекта, я создам заявку в CRM для специалиста."
-    : "Buna ziua. Sunt consultantul AI TEHNOFASAD. Va ajut sa alegeti panouri sandwich, acoperis, grosime, cantitate si livrare. Daca imi trimiteti telefonul si parametrii proiectului, creez automat cererea in CRM pentru specialist.";
 }
 
 function appendAiMessage(text, type = "bot") {
@@ -670,6 +667,7 @@ function setAiChatOpen(isOpen) {
 function resetAiChat() {
   if (!aiChatMessages) return;
   aiChatHistory.length = 0;
+  accumulatedLead = {};
   aiChatMessages.innerHTML = "";
   appendAiMessage(getAiWelcomeText(localStorage.getItem("siteLang") || "ro"), "bot");
 }
@@ -685,7 +683,7 @@ async function sendAiChatMessage(text) {
     const response = await fetch("/api/ai-chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lang, messages: aiChatHistory.slice(-10) }),
+      body: JSON.stringify({ lang, messages: aiChatHistory.slice(-10), accumulatedLead }),
     });
 
     if (!response.ok) throw new Error("AI request failed");
@@ -694,6 +692,10 @@ async function sendAiChatMessage(text) {
     pending?.remove();
     await typeAiMessage(payload.answer || (lang === "ru" ? "Не удалось получить ответ." : "Nu am putut genera raspunsul."), "bot");
     aiChatHistory.push({ role: "assistant", content: payload.answer || "" });
+
+    if (payload.crmData) {
+       accumulatedLead = { ...accumulatedLead, ...payload.crmData };
+    }
 
     if (payload.leadCreated) {
       appendAiMessage(lang === "ru" ? "Заявка создана. Специалист свяжется с вами." : "Cererea a fost creata. Un specialist va va contacta.", "system");
