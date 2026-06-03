@@ -3,6 +3,7 @@ const fs = require("fs");
 const fsp = require("fs/promises");
 const path = require("path");
 const zlib = require("zlib");
+const crypto = require("crypto");
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
@@ -169,28 +170,51 @@ function buildTeamsaleLeadPayload(lead) {
   return payload;
 }
 
+function generateZadarmaAuth(urlPath, params, key, secret) {
+  const sortedKeys = Object.keys(params).sort();
+  const sortedParams = {};
+  for (const k of sortedKeys) {
+    sortedParams[k] = params[k];
+  }
+  
+  // Create x-www-form-urlencoded query string
+  const queryString = new URLSearchParams(sortedParams).toString();
+  const md5hash = crypto.createHash("md5").update(queryString).digest("hex");
+  const dataToSign = urlPath + queryString + md5hash;
+  const hmac = crypto.createHmac("sha1", secret).update(dataToSign).digest("base64");
+  
+  return `${key}:${hmac}`;
+}
+
 async function sendLeadToTeamsale(lead) {
   const webhookUrl = String(process.env.TEAMSALE_WEBHOOK_URL || "").trim();
-  const apiKey = String(process.env.TEAMSALE_API_KEY || "").trim();
+  const zadarmaKey = String(process.env.ZADARMA_KEY || "").trim();
+  const zadarmaSecret = String(process.env.ZADARMA_SECRET || "").trim();
 
   if (!webhookUrl) {
     return { skipped: true, reason: "TEAMSALE_WEBHOOK_URL is not configured" };
   }
 
   const payload = buildTeamsaleLeadPayload(lead);
-  
-  const headers = {
-    "Content-Type": "application/json",
-  };
-  
-  if (apiKey) {
-    headers["Authorization"] = `Bearer ${apiKey}`;
+  let headers = { "Content-Type": "application/json" };
+  let body = JSON.stringify(payload);
+
+  if (zadarmaKey && zadarmaSecret) {
+    try {
+      const urlObj = new URL(webhookUrl);
+      const urlPath = urlObj.pathname;
+      headers["Authorization"] = generateZadarmaAuth(urlPath, payload, zadarmaKey, zadarmaSecret);
+      headers["Content-Type"] = "application/x-www-form-urlencoded";
+      body = new URLSearchParams(payload).toString();
+    } catch (e) {
+      console.error("Error generating Zadarma auth:", e);
+    }
   }
 
   const response = await fetch(webhookUrl, {
     method: "POST",
     headers,
-    body: JSON.stringify(payload),
+    body,
   });
 
   const text = await response.text();
