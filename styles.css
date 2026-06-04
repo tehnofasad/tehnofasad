@@ -1905,25 +1905,159 @@ body.ai-chat-open .floating-messengers {
   position: relative;
   display: inline-flex;
   width: 62px;
+  min-width: 62px;
   height: 62px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  gap: 0;
+  overflow: hidden;
   border: 0;
-  border-radius: 50%;
+  border-radius: 999px;
+  padding: 0 16px;
   color: #fff;
-  background: linear-gradient(135deg, #df2f2f, #a81717);
-  box-shadow: 0 16px 42px rgba(223, 47, 47, 0.38);
-  font-size: 1rem;
-  font-weight: 900;
+  background: linear-gradient(105deg, #303942 0%, #df2f2f 58%, #a81717 100%);
+  box-shadow: 0 14px 34px rgba(168, 23, 23, 0.32);
+  font-size: 1.15rem;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: width 220ms ease, gap 220ms ease, padding 220ms ease, box-shadow 220ms ease;
+}
+
+.ai-chat__toggle span {
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-width 220ms ease, opacity 160ms ease;
+}
+
+.ai-chat__toggle:hover,
+.ai-chat__toggle:focus-visible {
+  width: 224px;
+  gap: 18px;
+  padding: 0 22px 0 26px;
+  box-shadow: 0 18px 42px rgba(168, 23, 23, 0.4);
+}
+
+.ai-chat__toggle:hover span,
+.ai-chat__toggle:focus-visible span {
+  max-width: 150px;
+  opacity: 1;
+}
+
+.ai-chat__toggle svg {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
 }
 
 .ai-chat__toggle::after {
   position: absolute;
-  inset: -6px;
-  border: 1px solid rgba(223, 47, 47, 0.32);
-  border-radius: 50%;
+  inset: -4px;
+  border: 1px solid rgba(223, 47, 47, 0.3);
+  border-radius: 999px;
   animation: aiPulse 2.4s ease-out infinite;
   content: "";
+}
+
+.ai-chat__channel-menu {
+  position: absolute;
+  right: 0;
+  bottom: 76px;
+  display: none;
+  width: 252px;
+  padding: 18px 16px 16px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 12px;
+  color: #e5e7eb;
+  background: #111820;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.42);
+}
+
+.ai-chat.is-menu-open .ai-chat__channel-menu {
+  display: grid;
+  gap: 8px;
+  animation: aiPanelIn 0.22s ease forwards;
+}
+
+.ai-chat.is-menu-open .ai-chat__toggle {
+  width: 62px;
+  min-width: 62px;
+  padding: 0 16px;
+  gap: 0;
+}
+
+.ai-chat.is-menu-open .ai-chat__toggle span {
+  max-width: 0;
+  opacity: 0;
+}
+
+.ai-chat__channel-menu > strong {
+  font-size: 1rem;
+}
+
+.ai-chat__channel-menu > span {
+  margin-bottom: 7px;
+  color: #9ca3af;
+  font-size: 0.82rem;
+}
+
+.ai-chat__channel-menu a,
+.ai-chat__channel-menu button {
+  display: grid;
+  min-height: 48px;
+  grid-template-columns: 30px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #35404c;
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: #e5e7eb;
+  background: #19222c;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.ai-chat__channel-menu a:hover,
+.ai-chat__channel-menu button:hover {
+  border-color: #df2f2f;
+  background: #222c37;
+}
+
+.ai-chat__channel-menu b {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 7px;
+  color: #fff;
+  background: #df2f2f;
+  font-size: 0.72rem;
+  font-style: normal;
+}
+
+.ai-chat__channel-menu b svg {
+  width: 19px;
+  height: 19px;
+}
+
+.ai-chat__channel-menu .ai-chat__channel-whatsapp {
+  background: #22c55e;
+}
+
+.ai-chat__channel-menu .ai-chat__channel-viber {
+  background: #7360f2;
+}
+
+.ai-chat__channel-menu .ai-chat__channel-telegram {
+  background: #229ed9;
+}
+
+.ai-chat__channel-menu i {
+  color: #9ca3af;
+  font-size: 1.35rem;
+  font-style: normal;
 }
 
 .ai-chat__panel {
@@ -2358,8 +2492,8 @@ body.ai-chat-open .floating-messengers {
 }
 
 .ai-chat__panel {
-  width: min(768px, calc(100vw - 20px));
-  height: min(650px, calc(100vh - 28px));
+  width: min(540px, calc(100vw - 20px));
+  height: min(560px, calc(100vh - 28px));
   flex-direction: column;
   border: 1px solid rgba(148, 163, 184, 0.16);
   border-radius: 18px;
@@ -2989,11 +3123,38 @@ body.ai-chat-open .floating-messengers {
 
   .ai-chat__toggle {
     width: 52px;
+    min-width: 52px;
     height: 52px;
+    padding: 0 13px;
+    font-size: 1rem;
+  }
+
+  .ai-chat__toggle:hover,
+  .ai-chat__toggle:focus-visible {
+    width: 184px;
+    gap: 12px;
+    padding: 0 16px 0 20px;
+  }
+
+  .ai-chat__toggle svg {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
   }
 
   .ai-chat__panel {
     bottom: 64px;
+  }
+
+  .ai-chat__channel-menu {
+    bottom: 64px;
+    width: min(252px, calc(100vw - 20px));
+  }
+
+  .ai-chat.is-menu-open .ai-chat__toggle {
+    width: 52px;
+    min-width: 52px;
+    padding: 0 13px;
   }
 
   .ai-chat__tools {
