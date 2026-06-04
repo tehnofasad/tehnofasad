@@ -9,6 +9,8 @@ const aiChat = document.querySelector("#ai-chat");
 const aiChatToggle = document.querySelector(".ai-chat__toggle");
 const aiChatClose = document.querySelector(".ai-chat__close");
 const aiChatPanel = document.querySelector(".ai-chat__panel");
+const aiChannelMenu = document.querySelector(".ai-chat__channel-menu");
+const aiChannelChat = document.querySelector("[data-ai-channel='chat']");
 const aiChatMessages = document.querySelector(".ai-chat__messages");
 const aiChatForm = document.querySelector(".ai-chat__form");
 const aiQuickButtons = document.querySelectorAll("[data-ai-prompt]");
@@ -659,6 +661,8 @@ function appendAiCrmCard(data) {
 
 function setAiChatOpen(isOpen) {
   if (!aiChat || !aiChatToggle || !aiChatPanel) return;
+  aiChat.classList.remove("is-menu-open");
+  aiChannelMenu?.setAttribute("aria-hidden", "true");
   aiChat.classList.toggle("is-open", isOpen);
   document.body.classList.toggle("ai-chat-open", isOpen);
   aiChatToggle.setAttribute("aria-expanded", String(isOpen));
@@ -666,6 +670,13 @@ function setAiChatOpen(isOpen) {
   if (isOpen) {
     aiChatForm?.elements.message?.focus();
   }
+}
+
+function setAiChannelMenuOpen(isOpen) {
+  if (!aiChat || !aiChatToggle || !aiChannelMenu) return;
+  aiChat.classList.toggle("is-menu-open", isOpen);
+  aiChannelMenu.setAttribute("aria-hidden", String(!isOpen));
+  aiChatToggle.setAttribute("aria-expanded", String(isOpen));
 }
 
 function resetAiChat() {
@@ -715,10 +726,23 @@ async function sendAiChatMessage(text) {
 }
 
 aiChatToggle?.addEventListener("click", () => {
-  setAiChatOpen(!aiChat?.classList.contains("is-open"));
+  setAiChannelMenuOpen(!aiChat?.classList.contains("is-menu-open"));
 });
 
 aiChatClose?.addEventListener("click", () => setAiChatOpen(false));
+aiChannelChat?.addEventListener("click", () => setAiChatOpen(true));
+
+document.addEventListener("click", (event) => {
+  if (aiChat?.classList.contains("is-menu-open") && !aiChat.contains(event.target)) {
+    setAiChannelMenuOpen(false);
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  if (aiChat?.classList.contains("is-open")) setAiChatOpen(false);
+  if (aiChat?.classList.contains("is-menu-open")) setAiChannelMenuOpen(false);
+});
 
 aiChatForm?.addEventListener("submit", (event) => {
   event.preventDefault();
