@@ -450,8 +450,8 @@
       `Rezerva material: ${reserve}%`,
       `Suprafata cu rezerva: ${roofWithReserve.toFixed(1)} m2`,
       `Sistem ales: ${drainageLabels[drainageMode] || drainageMode}`,
-      eavesEnabled ? `Sandrama / streasina: ${eavesLength.toFixed(1)} ml` : "",
-      drainageEnabled ? `Jgheaburi / scurgere: ${drainageLength.toFixed(1)} ml` : "",
+      eavesEnabled ? `Sandrama / streasina: ${eavesLength.toFixed(1)} metri liniari` : "",
+      drainageEnabled ? `Jgheaburi / scurgere: ${drainageLength.toFixed(1)} metri liniari` : "",
       drainageEnabled ? `Burlane estimate: ${downpipeCount} buc` : "",
     ].filter(Boolean).join("\n");
   }

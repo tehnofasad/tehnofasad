@@ -193,7 +193,7 @@ const phraseRu = {
   "Suprafata acoperis": "Площадь крыши",
   "Cu rezerva": "С запасом",
   "Unghi aproximativ": "Примерный угол",
-  "Scurgere": "Водосток",
+  "Scurgere, ml": "Водосток, пог. м",
   "1. Forma acoperisului": "1. Форма крыши",
   "Casa simpla - 2 pante": "Простой дом - 2 ската",
   "Casa simpla - 4 pante": "Простой дом - 4 ската",
