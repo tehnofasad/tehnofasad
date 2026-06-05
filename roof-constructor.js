@@ -7,9 +7,6 @@
   const reserveOutput = document.querySelector("#roof-area-reserve");
   const angleOutput = document.querySelector("#roof-angle");
   const drainageOutput = document.querySelector("#roof-drainage");
-  const standardOutput = document.querySelector("#roof-standard");
-  const premiumOutput = document.querySelector("#roof-premium");
-  const vipOutput = document.querySelector("#roof-vip");
 
   if (!canvas || !viewer || !form || !window.THREE) {
     if (viewer) viewer.textContent = "3D viewer unavailable";
@@ -61,12 +58,11 @@
     t: "Casa in T",
   };
 
-  const materialRates = {
-    "Tigla metalica": 185,
-    "Tigla metalica modulara": 225,
-    "Tigla bituminoasa": 210,
-    "Tabla profilata": 145,
-    "Panouri sandwich acoperis": 330,
+  const drainageLabels = {
+    none: "fara sistem de scurgere",
+    eaves: "sandrama / streasina",
+    drainage: "scurgere",
+    full: "sandrama + scurgere",
   };
 
   scene.add(root);
@@ -373,10 +369,6 @@
     const angle = Math.atan(ridgeHeight / totalHalfWidth) * (180 / Math.PI);
     const drainageEnabled = drainageMode === "drainage" || drainageMode === "full";
     const eavesEnabled = drainageMode === "eaves" || drainageMode === "full";
-    const rate = materialRates[material] || 180;
-    const standard = roofWithReserve * rate;
-    const premium = standard * 1.22;
-    const vip = standard * 1.45;
     const bounds = {
       minX: -width / 2 - overhang - (shape === "l" ? wingWidth : 0),
       maxX: width / 2 + overhang + (shape === "t" ? wingWidth / 2 : 0),
@@ -407,6 +399,8 @@
     }
 
     const drainageLength = addDrainage(modelGroup, bounds, drainageEnabled);
+    const eavesLength = eavesEnabled ? (bounds.maxX - bounds.minX) * 2 + (bounds.maxZ - bounds.minZ) * 2 : 0;
+    const downpipeCount = drainageEnabled ? 4 : 0;
     addChimney(modelGroup, ridgeHeight, width, length);
 
     const modelSpan = Math.max(bounds.maxX - bounds.minX, bounds.maxZ - bounds.minZ, ridgeHeight * 2);
@@ -417,9 +411,6 @@
     reserveOutput.textContent = `${roofWithReserve.toFixed(1)} m2`;
     angleOutput.textContent = `${angle.toFixed(0)}°`;
     drainageOutput.textContent = drainageEnabled ? `${drainageLength.toFixed(1)} ml` : "0 ml";
-    standardOutput.textContent = `${Math.round(standard).toLocaleString("ro-RO")} lei`;
-    premiumOutput.textContent = `${Math.round(premium).toLocaleString("ro-RO")} lei`;
-    vipOutput.textContent = `${Math.round(vip).toLocaleString("ro-RO")} lei`;
 
     const valLength = document.querySelector("#val-length");
     const valWidth = document.querySelector("#val-width");
@@ -446,22 +437,23 @@
     }
 
     form.dataset.roofSummary = [
-      "3D roof configuration",
-      `shape: ${shapeLabels[shape]}`,
-      `material: ${material}`,
-      `system: ${drainageMode}${eavesEnabled ? " + eaves" : ""}`,
-      `main body: ${length} x ${width} m`,
-      shape === "l" || shape === "t" ? `secondary wing: ${wingLength} x ${wingWidth} m` : "",
-      `overhang: ${overhang} m`,
-      `footprint: ${(footprintMain + footprintWing).toFixed(1)} m2`,
-      `geometry coefficient: ${shapeCoefficient.toFixed(2)}x`,
-      `area: ${roofArea.toFixed(1)} m2`,
-      `with reserve: ${roofWithReserve.toFixed(1)} m2`,
-      `drainage: ${drainageLength.toFixed(1)} ml`,
-      `standard: ${Math.round(standard)} lei`,
-      `premium: ${Math.round(premium)} lei`,
-      `vip: ${Math.round(vip)} lei`,
-    ].filter(Boolean).join("; ");
+      "Configuratie 3D acoperis",
+      `Forma: ${shapeLabels[shape]}`,
+      `Material: ${material}`,
+      `Corp principal: ${length} x ${width} m`,
+      shape === "l" || shape === "t" ? `Aripa secundara: ${wingLength} x ${wingWidth} m` : "",
+      `Amprenta: ${(footprintMain + footprintWing).toFixed(1)} m2`,
+      `Streasina: ${overhang} m`,
+      `Inaltime coama: ${ridgeHeight} m`,
+      `Unghi aproximativ: ${angle.toFixed(0)}°`,
+      `Suprafata acoperis: ${roofArea.toFixed(1)} m2`,
+      `Rezerva material: ${reserve}%`,
+      `Suprafata cu rezerva: ${roofWithReserve.toFixed(1)} m2`,
+      `Sistem ales: ${drainageLabels[drainageMode] || drainageMode}`,
+      eavesEnabled ? `Sandrama / streasina: ${eavesLength.toFixed(1)} ml` : "",
+      drainageEnabled ? `Jgheaburi / scurgere: ${drainageLength.toFixed(1)} ml` : "",
+      drainageEnabled ? `Burlane estimate: ${downpipeCount} buc` : "",
+    ].filter(Boolean).join("\n");
   }
 
   let isVisible = false;

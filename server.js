@@ -83,6 +83,16 @@ function setSecurityHeaders(response) {
   );
 }
 
+function setCorsHeaders(request, response) {
+  const origin = request.headers.origin || "";
+  if (/^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)) {
+    response.setHeader("Access-Control-Allow-Origin", origin);
+    response.setHeader("Vary", "Origin");
+    response.setHeader("Access-Control-Allow-Methods", "GET,HEAD,POST,OPTIONS");
+    response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  }
+}
+
 function readRequestBody(request) {
   return new Promise((resolve, reject) => {
     let body = "";
@@ -134,6 +144,7 @@ function toArray(value) {
 function buildLeadComment(lead) {
   const comment = [
     lead.comment,
+    lead.roofPayload ? `Calcul 3D:\n${lead.roofPayload}` : "",
     lead.quantity ? `Cantitate: ${lead.quantity}` : "",
     lead.material ? `Material: ${lead.material}` : "",
     lead.panelType ? `Tip: ${lead.panelType}` : "",
@@ -863,9 +874,16 @@ function serveStatic(request, response) {
 }
 
 function handleRequest(request, response) {
+  setCorsHeaders(request, response);
   setSecurityHeaders(response);
 
   const requestUrl = new URL(request.url, `http://${request.headers.host}`);
+
+  if (request.method === "OPTIONS") {
+    response.writeHead(204);
+    response.end();
+    return;
+  }
 
   if (request.method === "GET" && requestUrl.pathname === "/health") {
     sendJson(response, 200, { ok: true });
