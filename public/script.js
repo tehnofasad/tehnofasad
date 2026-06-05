@@ -187,6 +187,34 @@ const phraseRu = {
   "Localitate": "Населенный пункт",
   "Telefon": "Телефон",
   "Cere estimarea": "Получить расчет",
+  "Calculator 3D pentru acoperis": "3D-конструктор крыши",
+  "Modeleaza acoperisul si estimeaza suprafata materialului": "Смоделируйте крышу и оцените площадь материала",
+  "Alege forma casei, ajusteaza volumetria, selecteaza materialul si activeaza scurgerea. Configuratorul estimeaza suprafata si trimite datele specialistului.": "Выберите форму дома, настройте размеры, выберите материал и водосток. Конструктор рассчитает площадь и отправит данные специалисту.",
+  "Suprafata acoperis": "Площадь крыши",
+  "Cu rezerva": "С запасом",
+  "Unghi aproximativ": "Примерный угол",
+  "Scurgere": "Водосток",
+  "1. Forma acoperisului": "1. Форма крыши",
+  "Casa simpla - 2 pante": "Простой дом - 2 ската",
+  "Casa simpla - 4 pante": "Простой дом - 4 ската",
+  "Casa in L": "Дом в форме L",
+  "Casa in T": "Дом в форме T",
+  "Continuă": "Продолжить",
+  "2. Ajustează Volumetria": "2. Настройте объем",
+  "Lungime corp principal": "Длина основного корпуса",
+  "Latime corp principal": "Ширина основного корпуса",
+  "Lungime aripa": "Длина крыла",
+  "Latime aripa": "Ширина крыла",
+  "Inaltime coama": "Высота конька",
+  "Streasina": "Свес крыши",
+  "Rezerva material": "Запас материала",
+  "3. Materialul": "3. Материал",
+  "Panouri sandwich acoperis": "Кровельные сэндвич-панели",
+  "4. Sistem de scurgere": "4. Водосточная система",
+  "Pana ce nu": "Пока нет",
+  "Sandrama / streasina": "Карниз / свес",
+  "Sandrama + scurgere": "Карниз + водосток",
+  "Trimite calculul": "Отправить расчет",
   "De ce TEHNOFASAD": "Почему TEHNOFASAD",
   "Avantaje clare pentru cei care au nevoie de material rapid": "Понятные преимущества для тех, кому материал нужен быстро",
   "Stoc in Balti": "Склад в Бельцах",
@@ -387,9 +415,22 @@ function getFormPayload(form) {
   return Object.fromEntries(data.entries());
 }
 
+function getApiEndpoint(path) {
+  const isLocalStaticPreview = ["localhost", "127.0.0.1"].includes(window.location.hostname)
+    && window.location.port
+    && window.location.port !== "3000";
+
+  return isLocalStaticPreview ? `http://localhost:3000${path}` : path;
+}
+
 async function submitLead(form) {
   const status = form.querySelector(".form-status");
   const button = form.querySelector("button[type='submit']");
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
   const payload = getFormPayload(form);
   const phoneDigits = String(payload.phone || "").replace(/\D/g, "");
 
@@ -402,7 +443,7 @@ async function submitLead(form) {
   button.disabled = true;
 
   try {
-    const response = await fetch("/api/leads", {
+    const response = await fetch(getApiEndpoint("/api/leads"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

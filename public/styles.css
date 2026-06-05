@@ -1524,6 +1524,20 @@ h3 {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.roof-form select {
+  color-scheme: dark;
+}
+
+.roof-form select option {
+  color: #101820;
+  background: #fff;
+}
+
+.roof-form select option:checked {
+  color: #fff;
+  background: var(--accent);
+}
+
 .roof-form input:focus,
 .roof-form select:focus {
   outline: 2px solid rgba(223, 47, 47, 0.55);
@@ -1532,37 +1546,6 @@ h3 {
 
 .roof-form .button {
   grid-column: span 3;
-}
-
-.roof-pricing {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.roof-pricing div {
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 8px;
-  padding: 14px;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.roof-pricing span,
-.roof-pricing strong {
-  display: block;
-}
-
-.roof-pricing span {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 0.8rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.roof-pricing strong {
-  margin-top: 6px;
-  color: #fff;
-  font-size: 1.15rem;
 }
 
 .section--reviews .section-text {
@@ -3083,8 +3066,7 @@ body.ai-chat-open .floating-messengers {
   }
 
   .roof-results,
-  .roof-choice-grid,
-  .roof-pricing {
+  .roof-choice-grid {
     grid-template-columns: 1fr;
   }
 
