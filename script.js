@@ -24,6 +24,7 @@ const i18n = {
   ro: {
     "nav.about": "Despre noi",
     "nav.products": "Produse",
+    "nav.prodMetalRoof": "Tigla metalica",
     "nav.prodSandwich": "Panouri sandwich",
     "nav.prodRoofing": "Materiale pentru acoperis",
     "nav.prodSheet": "Tabla profilata",
@@ -62,6 +63,7 @@ const i18n = {
   ru: {
     "nav.about": "О нас",
     "nav.products": "Продукция",
+    "nav.prodMetalRoof": "Металлочерепица",
     "nav.prodSandwich": "Сэндвич-панели",
     "nav.prodRoofing": "Кровельные материалы",
     "nav.prodSheet": "Профнастил",
