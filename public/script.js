@@ -90,7 +90,7 @@ const i18n = {
     "nav.prodSheet": "Профнастил",
     "nav.prodDrainage": "Водосточные системы",
     "nav.prodAcc": "Комплектующие",
-    "nav.calculator": "������",
+    "nav.calculator": "\u0420\u0430\u0441\u0447\u0435\u0442",
     "nav.portfolio": "Портфолио",
     "nav.reviews": "Отзывы",
     "nav.contacts": "Контакты",
