@@ -454,7 +454,8 @@ async function submitLead(form) {
     });
 
     if (!response.ok) {
-      throw new Error("Request failed");
+      status.textContent = currentText("failed");
+      return;
     }
 
     form.reset();
@@ -744,7 +745,11 @@ async function sendAiChatMessage(text) {
       body: JSON.stringify({ lang, messages: aiChatHistory.slice(-10), accumulatedLead }),
     });
 
-    if (!response.ok) throw new Error("AI request failed");
+    if (!response.ok) {
+      pending?.remove();
+      await typeAiMessage(lang === "ru" ? "Сейчас AI недоступен. Позвоните: +373 791 55 791." : "AI nu este disponibil acum. Sunati la +373 791 55 791.", "bot");
+      return;
+    }
 
     const payload = await response.json();
     pending?.remove();
@@ -829,7 +834,10 @@ aiLeadForm?.addEventListener("submit", async (event) => {
       }),
     });
 
-    if (!response.ok) throw new Error("Lead request failed");
+    if (!response.ok) {
+      appendAiMessage(lang === "ru" ? "Не удалось создать заявку. Позвоните: +373 791 55 791." : "Nu am putut crea cererea. Sunati la +373 791 55 791.", "bot");
+      return;
+    }
 
     aiLeadForm.reset();
     aiLeadForm.classList.remove("is-open");

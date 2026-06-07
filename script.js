@@ -55,6 +55,27 @@ const i18n = {
     "form.name": "Nume",
     "form.quantity": "Cantitate, ex. 250 m2",
     "form.submit": "Trimite cererea",
+    "reviews.kicker": "Recenzii",
+    "reviews.title": "Ce spun clientii care au comandat materiale",
+    "reviews.text": "Oamenii ne aleg cand au nevoie de raspuns concret, stoc verificat si material pregatit fara amanari inutile.",
+    "reviews.card1.text": "\"Aveam nevoie urgent de panouri pentru o hala mica. Am trimis dimensiunile, iar in aceeasi zi mi-au spus ce este in stoc si cat costa. Am ridicat marfa fara pierdere de timp.\"",
+    "reviews.card1.name": "Sergiu Munteanu",
+    "reviews.card1.role": "Proprietar atelier, Balti",
+    "reviews.card2.text": "\"Mi-au explicat diferenta dintre grosimi si ce varianta are sens pentru depozitul meu. Nu au impins cel mai scump produs, ci au calculat normal dupa proiect si buget.\"",
+    "reviews.card2.name": "Alexandru Cebotari",
+    "reviews.card2.role": "Client pentru depozit agricol",
+    "reviews.card3.text": "\"Am sunat pentru tabla profilata si accesorii. Mi-au facut lista completa, inclusiv elementele pe care le-as fi uitat. Asta m-a ajutat sa nu opresc montajul dupa prima zi.\"",
+    "reviews.card3.name": "Vadim Istrati",
+    "reviews.card3.role": "Constructor privat",
+    "reviews.card4.text": "\"Pentru magazinul nostru aveam termen scurt si nu puteam astepta comanda speciala. Au verificat lotul din Balti, au rezervat cantitatea si am primit totul conform intelegerii.\"",
+    "reviews.card4.name": "Irina Balan",
+    "reviews.card4.role": "Administrator spatiu comercial",
+    "reviews.card5.text": "\"Am cerut pret pentru acoperis si am primit raspuns pe inteles: ce material se potriveste, ce accesorii intra in calcul si unde pot economisi fara sa stric lucrarea.\"",
+    "reviews.card5.name": "Mihai Cazacu",
+    "reviews.card5.role": "Renovare casa, Singerei",
+    "reviews.card6.text": "\"Am revenit cu a doua comanda pentru ca prima livrare a fost corecta. Conteaza mult cand ti se spune din start ce este disponibil si nu trebuie sa suni de cinci ori.\"",
+    "reviews.card6.name": "Dumitru Moraru",
+    "reviews.card6.role": "Antreprenor constructii",
     sending: "Se trimite...",
     sent: "Cererea a fost trimisa. Va contactam in curand.",
     invalidPhone: "Introduceti un numar de telefon valid.",
@@ -94,6 +115,27 @@ const i18n = {
     "form.name": "Имя",
     "form.quantity": "Количество, напр. 250 м2",
     "form.submit": "Отправить заявку",
+    "reviews.kicker": "Отзывы",
+    "reviews.title": "Что говорят клиенты, которые уже заказали материалы",
+    "reviews.text": "К нам обращаются, когда нужен конкретный ответ, проверенное наличие и материал без лишних задержек.",
+    "reviews.card1.text": "\"Нужно было срочно закрыть небольшую производственную постройку. Отправил размеры, в тот же день получил наличие и цену. Материал забрал со склада без потери времени.\"",
+    "reviews.card1.name": "Сергей Мунтяну",
+    "reviews.card1.role": "Владелец мастерской, Бельцы",
+    "reviews.card2.text": "\"Мне нормально объяснили разницу по толщине и какую панель лучше брать для моего склада. Не пытались продать самое дорогое, а посчитали по задаче и бюджету.\"",
+    "reviews.card2.name": "Александр Чеботарь",
+    "reviews.card2.role": "Клиент для сельхозсклада",
+    "reviews.card3.text": "\"Звонил по профнастилу и комплектующим. Мне собрали полный список, включая детали, которые я сам бы не учел. Благодаря этому монтаж не остановился после первого дня.\"",
+    "reviews.card3.name": "Вадим Истрати",
+    "reviews.card3.role": "Частный строитель",
+    "reviews.card4.text": "\"Для нашего магазина сроки были короткие, ждать спецзаказ не могли. Проверили партию в Бельцах, зарезервировали количество, и мы получили материал как договорились.\"",
+    "reviews.card4.name": "Ирина Балан",
+    "reviews.card4.role": "Администратор коммерческого помещения",
+    "reviews.card5.text": "\"Запросил цену для кровли и получил понятный ответ: какой материал подходит, какие аксессуары нужны и где можно сэкономить без ущерба для работы.\"",
+    "reviews.card5.name": "Михаил Казаку",
+    "reviews.card5.role": "Ремонт дома, Сынжерей",
+    "reviews.card6.text": "\"Вернулся со вторым заказом, потому что первая поставка прошла корректно. Важно, когда сразу говорят, что есть в наличии, и не приходится звонить пять раз.\"",
+    "reviews.card6.name": "Дмитрий Морару",
+    "reviews.card6.role": "Подрядчик по строительству",
     sending: "Отправляем...",
     sent: "Заявка отправлена. Мы скоро свяжемся с вами.",
     invalidPhone: "Введите корректный номер телефона.",
@@ -454,7 +496,8 @@ async function submitLead(form) {
     });
 
     if (!response.ok) {
-      throw new Error("Request failed");
+      status.textContent = currentText("failed");
+      return;
     }
 
     form.reset();
@@ -744,7 +787,11 @@ async function sendAiChatMessage(text) {
       body: JSON.stringify({ lang, messages: aiChatHistory.slice(-10), accumulatedLead }),
     });
 
-    if (!response.ok) throw new Error("AI request failed");
+    if (!response.ok) {
+      pending?.remove();
+      await typeAiMessage(lang === "ru" ? "Сейчас AI недоступен. Позвоните: +373 791 55 791." : "AI nu este disponibil acum. Sunati la +373 791 55 791.", "bot");
+      return;
+    }
 
     const payload = await response.json();
     pending?.remove();
@@ -829,7 +876,10 @@ aiLeadForm?.addEventListener("submit", async (event) => {
       }),
     });
 
-    if (!response.ok) throw new Error("Lead request failed");
+    if (!response.ok) {
+      appendAiMessage(lang === "ru" ? "Не удалось создать заявку. Позвоните: +373 791 55 791." : "Nu am putut crea cererea. Sunati la +373 791 55 791.", "bot");
+      return;
+    }
 
     aiLeadForm.reset();
     aiLeadForm.classList.remove("is-open");

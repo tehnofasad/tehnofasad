@@ -29,8 +29,6 @@
   let lastY = 0;
   let pitch = -0.28;
   let cameraDistance = 20;
-  let idleTimer = 0;
-  let autoRotate = true;
   const IDLE_DELAY = 3000;
   let lastInteraction = 0;
   let pinchStartDist = 0;
@@ -359,7 +357,6 @@
     const houseHeight = Math.max(1.6, Math.min(4, ridgeHeight * 0.9));
     const footprintMain = length * width;
     const footprintWing = shape === "l" || shape === "t" ? wingLength * wingWidth : 0;
-    const shapeCoefficient = { gable: 1, hip: 1.08, l: 1.22, t: 1.3 }[shape];
     const totalHalfWidth = width / 2 + overhang;
     const slopeLength = Math.sqrt(totalHalfWidth ** 2 + ridgeHeight ** 2);
     const baseArea = 2 * (length + overhang * 2) * slopeLength;
@@ -569,7 +566,7 @@
   // Ensure accordion only has one open at a time (optional UX enhancement)
   const allDetails = form.querySelectorAll("details.cfg-step");
   allDetails.forEach(details => {
-    details.addEventListener("toggle", (e) => {
+    details.addEventListener("toggle", () => {
       if (details.open) {
         allDetails.forEach(other => {
           if (other !== details && other.open) {
