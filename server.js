@@ -73,13 +73,17 @@ function sendJson(response, statusCode, payload) {
 }
 
 function setSecurityHeaders(response) {
+  response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
   response.setHeader("X-Content-Type-Options", "nosniff");
-  response.setHeader("X-Frame-Options", "SAMEORIGIN");
+  response.setHeader("X-Frame-Options", "DENY");
   response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.setHeader("Permissions-Policy", "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()");
+  response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  response.setHeader("Cross-Origin-Resource-Policy", "same-origin");
+  response.setHeader("X-Permitted-Cross-Domain-Policies", "none");
   response.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' cdn.jsdelivr.net; style-src 'self' fonts.googleapis.com 'unsafe-inline'; font-src fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'"
+    "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
   );
 }
 
