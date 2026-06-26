@@ -83,7 +83,7 @@ function setSecurityHeaders(response) {
   response.setHeader("X-Permitted-Cross-Domain-Policies", "none");
   response.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
+    "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
   );
 }
 
