@@ -114,10 +114,10 @@ const DEFAULT_STORE_BRANCHES = [
   },
   {
     id: "south-moldova",
-    name: "TEHNOFASAD Sud Moldova",
+    name: "Eurofasad",
     type: "partner_branch",
-    city: "Comrat / Cahul",
-    address: "zona Comrat / Cahul, adresa se confirma la apel",
+    city: "Balti",
+    address: "Balti, s.Corlateni",
     phone: "+37376599997, +37376707170",
     email: "info@tehnofasad.md",
     hours: {
@@ -129,7 +129,7 @@ const DEFAULT_STORE_BRANCHES = [
       latitude: null,
       longitude: null,
     },
-    mapUrl: "https://www.google.com/maps/search/?api=1&query=Comrat%20Cahul%20TEHNOFASAD",
+    mapUrl: "https://maps.app.goo.gl/xePpVqr6Zmmbfcxm9",
     services: ["consultation", "orders", "partners"],
     isMain: false,
     active: true,
