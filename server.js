@@ -67,6 +67,151 @@ const MIME_TYPES = {
   ".ico": "image/x-icon",
 };
 
+const DEFAULT_STORE_BRANCHES = [
+  {
+    id: "balti-dovator",
+    name: "TEHNOFASAD Balti",
+    type: "warehouse_store",
+    city: "Balti",
+    address: "mun. Balti, str. Lev Dovator 1",
+    phone: "+373(791)55791",
+    email: "info@tehnofasad.md",
+    hours: {
+      weekdays: "08:00-17:30",
+      saturday: "08:00-15:00",
+      sunday: "closed",
+    },
+    geo: {
+      latitude: 47.7741648,
+      longitude: 27.9116626,
+    },
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=47.7741648,27.9116626",
+    services: ["pickup", "stock_check", "consultation", "reservation"],
+    isMain: true,
+    active: true,
+  },
+  {
+    id: "balti-tvoy-dom",
+    name: "TEHNOFASAD Balti - piata Tvoy Dom",
+    type: "store",
+    city: "Balti",
+    address: "mun. Balti, str. Locomotivelor 4",
+    phone: "+373(231)7-08-10",
+    email: "info@tehnofasad.md",
+    hours: {
+      weekdays: "confirm by phone",
+      saturday: "confirm by phone",
+      sunday: "confirm by phone",
+    },
+    geo: {
+      latitude: null,
+      longitude: null,
+    },
+    mapUrl: "https://www.google.com/maps/place/%D0%A0%D1%8B%D0%BD%D0%BE%D0%BA+%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D0%BE%D0%B2+%22%D0%A2%D0%B2%D0%BE%D0%B9+%D0%94%D0%BE%D0%BC%22/data=!4m2!3m1!1s0x0:0xc32f5a1c3d5dd609",
+    services: ["pickup", "consultation", "orders"],
+    isMain: false,
+    active: true,
+  },
+  {
+    id: "south-moldova",
+    name: "TEHNOFASAD Sud Moldova",
+    type: "partner_branch",
+    city: "Comrat / Cahul",
+    address: "zona Comrat / Cahul, adresa se confirma la apel",
+    phone: "+37376599997, +37376707170",
+    email: "info@tehnofasad.md",
+    hours: {
+      weekdays: "08:00-17:30",
+      saturday: "08:00-15:00",
+      sunday: "closed",
+    },
+    geo: {
+      latitude: null,
+      longitude: null,
+    },
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=Comrat%20Cahul%20TEHNOFASAD",
+    services: ["consultation", "orders", "partners"],
+    isMain: false,
+    active: true,
+  },
+];
+
+function normalizeBranch(rawBranch, index) {
+  const branch = rawBranch && typeof rawBranch === "object" ? rawBranch : {};
+  const geo = branch.geo && typeof branch.geo === "object" ? branch.geo : {};
+  return {
+    id: String(branch.id || `branch-${index + 1}`).trim().slice(0, 80),
+    name: String(branch.name || "").trim().slice(0, 120),
+    type: String(branch.type || "store").trim().slice(0, 60),
+    city: String(branch.city || "").trim().slice(0, 80),
+    address: String(branch.address || "").trim().slice(0, 180),
+    phone: String(branch.phone || "").trim().slice(0, 40),
+    email: String(branch.email || "").trim().slice(0, 120),
+    hours: branch.hours && typeof branch.hours === "object" ? branch.hours : {},
+    geo: {
+      latitude: Number(geo.latitude || 0) || null,
+      longitude: Number(geo.longitude || 0) || null,
+    },
+    mapUrl: String(branch.mapUrl || "").trim().slice(0, 500),
+    services: Array.isArray(branch.services) ? branch.services.map((item) => String(item).trim()).filter(Boolean).slice(0, 20) : [],
+    isMain: Boolean(branch.isMain),
+    active: branch.active !== false,
+  };
+}
+
+function loadStoreBranches() {
+  const raw = String(process.env.STORE_BRANCHES_JSON || "").trim();
+  if (!raw) return DEFAULT_STORE_BRANCHES;
+
+  try {
+    const parsed = JSON.parse(raw);
+    const branches = Array.isArray(parsed) ? parsed : parsed.branches;
+    if (!Array.isArray(branches)) return DEFAULT_STORE_BRANCHES;
+
+    const normalized = branches
+      .map(normalizeBranch)
+      .filter((branch) => branch.active && branch.name && branch.city && branch.address);
+
+    return normalized.length ? normalized : DEFAULT_STORE_BRANCHES;
+  } catch (error) {
+    console.error(`Store branches config invalid: ${error.message}`);
+    return DEFAULT_STORE_BRANCHES;
+  }
+}
+
+const STORE_BRANCHES = loadStoreBranches();
+
+function getPublicBranches() {
+  return STORE_BRANCHES.map((branch) => ({
+    id: branch.id,
+    name: branch.name,
+    type: branch.type,
+    city: branch.city,
+    address: branch.address,
+    phone: branch.phone,
+    email: branch.email,
+    hours: branch.hours,
+    geo: branch.geo,
+    mapUrl: branch.mapUrl,
+    services: branch.services,
+    isMain: branch.isMain,
+  }));
+}
+
+function getBranchById(id) {
+  const value = String(id || "").trim();
+  return STORE_BRANCHES.find((branch) => branch.id === value) || null;
+}
+
+function formatBranchLine(branch) {
+  const hours = branch.hours?.weekdays ? `Mon-Fri ${branch.hours.weekdays}` : "";
+  return [branch.name, branch.city, branch.address, branch.phone, hours].filter(Boolean).join(" | ");
+}
+
+function buildBranchesContext() {
+  return STORE_BRANCHES.map(formatBranchLine).join("\n");
+}
+
 function sendJson(response, statusCode, payload) {
   response.writeHead(statusCode, { "Content-Type": "application/json; charset=utf-8" });
   response.end(JSON.stringify(payload));
@@ -146,6 +291,7 @@ function toArray(value) {
 }
 
 function buildLeadComment(lead) {
+  const branch = getBranchById(lead.branchId);
   const comment = [
     lead.comment,
     lead.roofPayload ? `Calcul 3D:\n${lead.roofPayload}` : "",
@@ -153,6 +299,7 @@ function buildLeadComment(lead) {
     lead.material ? `Material: ${lead.material}` : "",
     lead.panelType ? `Tip: ${lead.panelType}` : "",
     lead.thickness ? `Grosime: ${lead.thickness}` : "",
+    branch ? `Filiala: ${branch.name}, ${branch.address}` : "",
     lead.location ? `Localitate: ${lead.location}` : "",
     lead.source ? `Sursa: ${lead.source}` : "",
   ].filter(Boolean).join("\n");
@@ -172,7 +319,7 @@ function buildTeamsaleLeadPayload(lead) {
     lead: {
       name: lead.product ? `TEHNOFASAD: ${lead.product}` : (lead.name || "Client Website"),
       comment: buildLeadComment(lead),
-      city: lead.location || "",
+      city: lead.location || getBranchById(lead.branchId)?.city || "",
       website: "https://tehnofasad.md/",
       lead_source: normalizeTeamsaleSource(process.env.TEAMSALE_SOURCE_ID || lead.source),
       phones: lead.phone ? [{ type: "work", phone: lead.phone }] : [],
@@ -229,7 +376,7 @@ function buildLegacyTeamsaleLeadPayload(lead) {
     email: lead.email || "",
     comment: buildLeadComment(lead),
     source: process.env.TEAMSALE_SOURCE_ID || lead.source || "WEB",
-    city: lead.location || "",
+    city: lead.location || getBranchById(lead.branchId)?.city || "",
     website: "https://tehnofasad.md/"
   };
 }
@@ -451,13 +598,14 @@ function buildAiCrmData(lead, managerContext) {
   if (!lead) return null;
   const analysis = managerContext?.analysis || {};
   const priceRange = managerContext?.priceRange;
+  const branch = getBranchById(lead.branchId);
   return {
     name: lead.name || "",
     phone: lead.phone || "",
     object: analysis.objectType || lead.material || "",
     area_m2: analysis.calculatedArea || "",
     thickness: lead.thickness || analysis.thickness || "",
-    logistics: lead.location ? `delivery/pickup: ${lead.location}` : "",
+    logistics: branch ? `branch: ${branch.name}, ${branch.address}` : (lead.location ? `delivery/pickup: ${lead.location}` : ""),
     estimate_mdl: formatMdlRange(priceRange),
   };
 }
@@ -466,10 +614,25 @@ function fallbackAiReply(message, lang) {
   const text = String(message || "");
   const isRu = lang === "ru" || /[а-яё]/i.test(text);
   const extractedLead = extractLeadFromMessage(message);
+  const asksBranches = /(filial|filiale|magazin|magazine|depozit|depozite|adresa|unde|harta|branch|store|shop|address|филиал|филиалы|магазин|магазины|склад|склады|адрес|где)/i.test(text);
   const wantsOffer = /(цена|стоим|заказ|заявк|позвон|оферт|pret|oferta|comand|sunati|apel|calcul|расчет|расчёт)/i.test(text);
   const managerContext = buildManagerContext(text);
   const area = managerContext.analysis.calculatedArea;
   const range = formatMdlRange(managerContext.priceRange);
+
+  if (asksBranches && !wantsOffer && !area) {
+    const branches = STORE_BRANCHES.map((branch) => {
+      const hours = branch.hours?.weekdays ? ` ${isRu ? "График" : "Program"}: ${branch.hours.weekdays}` : "";
+      return `${branch.name}: ${branch.address}, ${branch.phone}.${hours}`;
+    }).join(" ");
+    return {
+      answer: isRu
+        ? `Доступные филиалы TEHNOFASAD: ${branches} Напишите город или выберите филиал, и я подскажу самовывоз или следующий шаг.`
+        : `Filiale TEHNOFASAD disponibile: ${branches} Scrieti orasul sau filiala si va spun ridicarea sau urmatorul pas.`,
+      lead: extractedLead,
+      crmData: buildAiCrmData(extractedLead, managerContext),
+    };
+  }
 
   if (area) {
     const analysis = managerContext.analysis;
@@ -657,8 +820,10 @@ async function callOpenAiAgent(messages, lang, accumulatedLead) {
     "Reply in the user's language. Use Russian for Cyrillic/Russian messages and Romanian for Romanian messages.",
     "",
     "=== COMPANY ===",
-    "TEHNOFASAD S.R.L.; phone +373 791 55 791; email info@tehnofasad.md; address mun. Balti, str. Lev Dovator 1; website tehnofasad.md.",
-    "Working hours: Mon-Fri 08:00-17:00, Sat 09:00-14:00.",
+    "TEHNOFASAD S.R.L.; phone +373(791)55791; email info@tehnofasad.md; address mun. Balti, str. Lev Dovator 1; website tehnofasad.md.",
+    "Working hours: Mon-Fri 08:00-17:30, Sat 08:00-15:00.",
+    "Store branches / pickup points:",
+    buildBranchesContext(),
     "",
     "=== FULL PRODUCT CATALOG ===",
     "1. Sandwich panels for WALLS — thickness 40/50/60/80/100 mm, mineral wool or PIR core, width 1000-1200 mm, length cut to order up to 12 m. For halls, warehouses, cold rooms, commercial buildings.",
@@ -694,7 +859,7 @@ async function callOpenAiAgent(messages, lang, accumulatedLead) {
     "",
     "=== JSON OUTPUT ===",
     "Return ONLY valid JSON, no markdown, no prose outside JSON.",
-    "JSON shape: {\"answer\":\"string\",\"lead\":null or {\"name\":\"\",\"phone\":\"\",\"email\":\"\",\"material\":\"\",\"quantity\":\"\",\"thickness\":\"\",\"color\":\"\",\"location\":\"\",\"comment\":\"\",\"source\":\"ai-chat\"}}.",
+    "JSON shape: {\"answer\":\"string\",\"lead\":null or {\"name\":\"\",\"phone\":\"\",\"email\":\"\",\"material\":\"\",\"quantity\":\"\",\"thickness\":\"\",\"color\":\"\",\"location\":\"\",\"branchId\":\"\",\"comment\":\"\",\"source\":\"ai-chat\"}}.",
     "Create lead only when phone is present and the user asks for price, order, stock check, delivery, callback, reservation or calculation.",
     "If there is no phone, lead must be null.",
   ].join("\n");
@@ -891,6 +1056,11 @@ function handleRequest(request, response) {
 
   if (request.method === "GET" && requestUrl.pathname === "/health") {
     sendJson(response, 200, { ok: true });
+    return;
+  }
+
+  if (request.method === "GET" && requestUrl.pathname === "/api/branches") {
+    sendJson(response, 200, { ok: true, branches: getPublicBranches() });
     return;
   }
 

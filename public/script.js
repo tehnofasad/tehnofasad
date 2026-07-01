@@ -33,7 +33,7 @@ const i18n = {
     "nav.calculator": "Calculator",
     "nav.portfolio": "Portofoliu",
     "nav.reviews": "Recenzii",
-    "nav.contacts": "Contacte",
+    "nav.contacts": "Filiale",
     "common.offer": "Oferta",
     "common.callNow": "Suna acum",
     "hero.kicker": "Panouri sandwich / depozit in Balti",
@@ -79,7 +79,7 @@ const i18n = {
     sending: "Se trimite...",
     sent: "Cererea a fost trimisa. Va contactam in curand.",
     invalidPhone: "Introduceti un numar de telefon valid.",
-    failed: "Nu s-a putut trimite cererea. Sunati la +373 791 55 791.",
+    failed: "Nu s-a putut trimite cererea. Sunati la +373(791)55791.",
   },
   ru: {
     "nav.about": "О нас",
@@ -93,7 +93,7 @@ const i18n = {
     "nav.calculator": "\u0420\u0430\u0441\u0447\u0435\u0442",
     "nav.portfolio": "Портфолио",
     "nav.reviews": "Отзывы",
-    "nav.contacts": "Контакты",
+    "nav.contacts": "Филиалы",
     "common.offer": "Заявка",
     "common.callNow": "Позвонить",
     "hero.kicker": "Сэндвич-панели / склад в Бельцах",
@@ -139,7 +139,7 @@ const i18n = {
     sending: "Отправляем...",
     sent: "Заявка отправлена. Мы скоро свяжемся с вами.",
     invalidPhone: "Введите корректный номер телефона.",
-    failed: "Не удалось отправить заявку. Позвоните на +373 791 55 791.",
+    failed: "Не удалось отправить заявку. Позвоните на +373(791)55791.",
   },
 };
 
@@ -147,6 +147,12 @@ const phraseRu = {
   "mun. Balti, str. Lev Dovator 1": "мун. Бельцы, ул. Лев Доватор 1",
   "Cere oferta": "Получить цену",
   "Balti": "Бельцы",
+  "Balti (piata Tvoy Dom)": "Бельцы (рынок Твой Дом)",
+  "Consultatie, comenzi si ridicare materiale": "Консультация, заказы и самовывоз материалов",
+  "mun. Balti, str. Locomotivelor, 4": "мун. Бельцы, ул. Locomotivelor, 4",
+  "Programul se confirma la apel": "График уточняется по телефону",
+  "Tvoy Dom": "Твой Дом",
+  "Balti Tvoy Dom": "Бельцы Твой Дом",
   "depozit si ridicare locala": "склад и самовывоз",
   "Perete": "Стены",
   "panouri pentru hale si depozite": "панели для ангаров и складов",
@@ -789,7 +795,7 @@ async function sendAiChatMessage(text) {
 
     if (!response.ok) {
       pending?.remove();
-      await typeAiMessage(lang === "ru" ? "Сейчас AI недоступен. Позвоните: +373 791 55 791." : "AI nu este disponibil acum. Sunati la +373 791 55 791.", "bot");
+      await typeAiMessage(lang === "ru" ? "Сейчас AI недоступен. Позвоните: +373(791)55791." : "AI nu este disponibil acum. Sunati la +373(791)55791.", "bot");
       return;
     }
 
@@ -808,7 +814,7 @@ async function sendAiChatMessage(text) {
     }
   } catch (error) {
     pending?.remove();
-    await typeAiMessage(lang === "ru" ? "Сейчас AI недоступен. Позвоните: +373 791 55 791." : "AI nu este disponibil acum. Sunati la +373 791 55 791.", "bot");
+    await typeAiMessage(lang === "ru" ? "Сейчас AI недоступен. Позвоните: +373(791)55791." : "AI nu este disponibil acum. Sunati la +373(791)55791.", "bot");
   } finally {
     setAiFormBusy(false);
     aiChatForm?.elements.message?.focus();
@@ -877,7 +883,7 @@ aiLeadForm?.addEventListener("submit", async (event) => {
     });
 
     if (!response.ok) {
-      appendAiMessage(lang === "ru" ? "Не удалось создать заявку. Позвоните: +373 791 55 791." : "Nu am putut crea cererea. Sunati la +373 791 55 791.", "bot");
+      appendAiMessage(lang === "ru" ? "Не удалось создать заявку. Позвоните: +373(791)55791." : "Nu am putut crea cererea. Sunati la +373(791)55791.", "bot");
       return;
     }
 
@@ -885,7 +891,7 @@ aiLeadForm?.addEventListener("submit", async (event) => {
     aiLeadForm.classList.remove("is-open");
     appendAiMessage(lang === "ru" ? "Заявка создана в CRM. Специалист TEHNOFASAD свяжется с вами." : "Cererea a fost creata in CRM. Specialistul TEHNOFASAD va va contacta.", "system");
   } catch (error) {
-    appendAiMessage(lang === "ru" ? "Не удалось создать заявку. Позвоните: +373 791 55 791." : "Nu am putut crea cererea. Sunati la +373 791 55 791.", "bot");
+    appendAiMessage(lang === "ru" ? "Не удалось создать заявку. Позвоните: +373(791)55791." : "Nu am putut crea cererea. Sunati la +373(791)55791.", "bot");
   } finally {
     button.disabled = false;
   }

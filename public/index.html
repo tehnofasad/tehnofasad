@@ -39,6 +39,19 @@
         "latitude": 47.7741648,
         "longitude": 27.9116626
       },
+      "department": [
+        {
+          "@type": "Store",
+          "name": "TEHNOFASAD Balti - Tvoy Dom",
+          "telephone": "+37323170810",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Strada Locomotivelor 4",
+            "addressLocality": "Balti",
+            "addressCountry": "MD"
+          }
+        }
+      ],
       "sameAs": [
         "https://www.instagram.com/tehno.fasad/",
         "https://www.tiktok.com/@tehnofasad.md"
@@ -83,7 +96,7 @@
           </svg>
         </a>
       </div>
-      <a href="tel:+37379155791">+373 791 55 791</a>
+      <a href="tel:+37379155791">+373(791)55791</a>
       <a href="mailto:info@tehnofasad.md">info@tehnofasad.md</a>
       <span>mun. Balti, str. Lev Dovator 1</span>
     </div>
@@ -111,7 +124,7 @@
         <a href="#estimate" data-i18n="nav.calculator">Calculator</a>
         <a href="#portfolio" data-i18n="nav.portfolio">Portofoliu</a>
         <a href="#reviews" data-i18n="nav.reviews">Recenzii</a>
-        <a href="#contacts" data-i18n="nav.contacts">Contacte</a>
+        <a href="#contacts" data-i18n="nav.contacts">Filiale</a>
       </nav>
       <div class="header-actions">
         <div class="language-switch" aria-label="Language switch">
@@ -787,37 +800,183 @@
       </section>
 
       <section class="section section--contacts" id="contacts">
-        <div class="section__inner contacts">
-          <div>
-            <p class="section-kicker">Contacte</p>
-            <h2>TEHNOFASAD S.R.L.</h2>
-            <p class="section-text">mun. Balti, str. Lev Dovator, 1</p>
+        <div class="section__inner">
+          <div class="section-heading section-heading--contacts">
+            <div>
+              <p class="section-kicker">Filiale</p>
+              <h2>Alege filiala TEHNOFASAD</h2>
+            </div>
+            <p class="section-text">Trei puncte pentru consultatie, ridicare si rezervarea materialelor. Selecteaza filiala potrivita si deschide rapid ruta sau formularul.</p>
           </div>
-          <div class="contact-actions">
-            <a class="contact-card" href="tel:+37379155791">
-              <span>Telefon</span>
-              <strong>+373 791 55 791</strong>
-            </a>
-            <a class="contact-card" href="mailto:info@tehnofasad.md">
-              <span>Email</span>
-              <strong>info@tehnofasad.md</strong>
-            </a>
-            <div class="contact-card">
-              <span>Messenger</span>
-              <div class="messenger-links messenger-links--contact">
-                <a href="https://wa.me/37379155791" target="_blank" rel="noreferrer">WhatsApp</a>
-                <a href="viber://chat?number=%2B37379155791">Viber</a>
-                <a href="https://t.me/+37379155791" target="_blank" rel="noreferrer">Telegram</a>
+
+          <div class="branches">
+            <div class="branch-list" aria-label="Lista filialelor TEHNOFASAD">
+              <details class="branch-card" open>
+                <summary>
+                  <span class="branch-card__pin">1</span>
+                  <span>
+                    <strong>Balti (depozit principal)</strong>
+                    <small>Stoc, ridicare si consultatie tehnica</small>
+                  </span>
+                </summary>
+                <div class="branch-card__body">
+                  <p>mun. Balti, str. Lev Dovator, 1</p>
+                  <div class="branch-card__phone-row">
+                    <a class="branch-card__phone" href="tel:+37379155791">+373(791)55791</a>
+                    <div class="branch-card__messengers" aria-label="Messenger">
+                      <a class="branch-card__messenger branch-card__messenger--viber" href="viber://chat?number=%2B37379155791" aria-label="Viber">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M7.3 5.5c3.6-.9 7.5-.7 9.6 1.4 1.8 1.8 2 5.7 1.2 8.8-.4 1.5-1.5 2.4-3 2.6-.8.1-1.8.2-2.8.2l-3.2 2.2c-.5.3-1.1 0-1.1-.6v-1.9c-1.1-.2-2-.5-2.6-1.1-2.1-2.1-2.3-6-1.4-9.6.4-1.1 1.1-1.8 3.3-2Z"/>
+                          <path d="M9.2 8.5c.3-.2.7-.2 1 .1l.8 1c.2.3.2.7 0 1l-.4.5c.5 1 1.3 1.8 2.3 2.3l.5-.4c.3-.2.7-.2 1 0l1 .8c.3.2.4.7.1 1-.3.5-.8.9-1.4.9-2.7-.2-5.5-3-5.7-5.7-.1-.7.3-1.2.8-1.5Z"/>
+                        </svg>
+                      </a>
+                      <a class="branch-card__messenger branch-card__messenger--whatsapp" href="https://wa.me/37379155791" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M12 4.2a7.2 7.2 0 0 0-6.1 11l-1 3.7 3.8-1A7.2 7.2 0 1 0 12 4.2Z"/>
+                          <path d="M9.2 8.1c.2-.4.4-.4.8-.4h.5c.2 0 .4.1.6.5l.7 1.6c.1.3.1.5-.1.7l-.5.6c-.2.2-.2.4-.1.6.4.8 1 1.4 1.6 2 .7.6 1.4 1 2.2 1.2.2.1.4.1.6-.1l.7-.8c.2-.2.5-.3.8-.2l1.5.7c.4.2.5.4.5.6 0 .6-.4 1.4-.9 1.7-.6.4-1.4.4-2.4.1-3.4-1-6-3.5-7-6.7-.3-.9-.2-1.5.1-2.1l.4-.6Z"/>
+                        </svg>
+                      </a>
+                      <a class="branch-card__messenger branch-card__messenger--telegram" href="https://t.me/+37379155791" target="_blank" rel="noreferrer" aria-label="Telegram">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M20.8 4.6 17.9 19c-.2 1-1.1 1.2-1.8.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.4 8-7.2c.4-.3-.1-.5-.5-.2l-9.9 6.2-4.3-1.4c-.9-.3-.9-1 .2-1.4L19.3 4c.8-.3 1.6.2 1.5.6Z"/>
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                  <p>Luni-Vineri: 08:00 - 17:30, Sambata: 08:00 - 15:00</p>
+                  <div class="branch-card__actions">
+                    <a class="button button--primary" href="https://www.google.com/maps/search/?api=1&query=47.7741648,27.9116626" target="_blank" rel="noreferrer">Pe harta</a>
+                    <button class="button button--outline" type="button" data-open-form>Contacteaza-ne</button>
+                  </div>
+                </div>
+              </details>
+
+              <details class="branch-card">
+                <summary>
+                  <span class="branch-card__pin">2</span>
+                  <span>
+                    <strong>Balti (piata Tvoy Dom)</strong>
+                    <small>Consultatie, comenzi si ridicare materiale</small>
+                  </span>
+                </summary>
+                <div class="branch-card__body">
+                  <p>mun. Balti, str. Locomotivelor, 4</p>
+                  <div class="branch-card__phone-row">
+                    <a class="branch-card__phone" href="tel:+37323170810">+373(231)7-08-10</a>
+                    <div class="branch-card__messengers" aria-label="Messenger">
+                      <a class="branch-card__messenger branch-card__messenger--viber" href="viber://chat?number=%2B37379155791" aria-label="Viber">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M7.3 5.5c3.6-.9 7.5-.7 9.6 1.4 1.8 1.8 2 5.7 1.2 8.8-.4 1.5-1.5 2.4-3 2.6-.8.1-1.8.2-2.8.2l-3.2 2.2c-.5.3-1.1 0-1.1-.6v-1.9c-1.1-.2-2-.5-2.6-1.1-2.1-2.1-2.3-6-1.4-9.6.4-1.1 1.1-1.8 3.3-2Z"/>
+                          <path d="M9.2 8.5c.3-.2.7-.2 1 .1l.8 1c.2.3.2.7 0 1l-.4.5c.5 1 1.3 1.8 2.3 2.3l.5-.4c.3-.2.7-.2 1 0l1 .8c.3.2.4.7.1 1-.3.5-.8.9-1.4.9-2.7-.2-5.5-3-5.7-5.7-.1-.7.3-1.2.8-1.5Z"/>
+                        </svg>
+                      </a>
+                      <a class="branch-card__messenger branch-card__messenger--whatsapp" href="https://wa.me/37379155791" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M12 4.2a7.2 7.2 0 0 0-6.1 11l-1 3.7 3.8-1A7.2 7.2 0 1 0 12 4.2Z"/>
+                          <path d="M9.2 8.1c.2-.4.4-.4.8-.4h.5c.2 0 .4.1.6.5l.7 1.6c.1.3.1.5-.1.7l-.5.6c-.2.2-.2.4-.1.6.4.8 1 1.4 1.6 2 .7.6 1.4 1 2.2 1.2.2.1.4.1.6-.1l.7-.8c.2-.2.5-.3.8-.2l1.5.7c.4.2.5.4.5.6 0 .6-.4 1.4-.9 1.7-.6.4-1.4.4-2.4.1-3.4-1-6-3.5-7-6.7-.3-.9-.2-1.5.1-2.1l.4-.6Z"/>
+                        </svg>
+                      </a>
+                      <a class="branch-card__messenger branch-card__messenger--telegram" href="https://t.me/+37379155791" target="_blank" rel="noreferrer" aria-label="Telegram">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M20.8 4.6 17.9 19c-.2 1-1.1 1.2-1.8.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.4 8-7.2c.4-.3-.1-.5-.5-.2l-9.9 6.2-4.3-1.4c-.9-.3-.9-1 .2-1.4L19.3 4c.8-.3 1.6.2 1.5.6Z"/>
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                  <p>Programul se confirma la apel</p>
+                  <div class="branch-card__actions">
+                    <a class="button button--primary" href="https://www.google.com/maps/place/%D0%A0%D1%8B%D0%BD%D0%BE%D0%BA+%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D0%BE%D0%B2+%22%D0%A2%D0%B2%D0%BE%D0%B9+%D0%94%D0%BE%D0%BC%22/data=!4m2!3m1!1s0x0:0xc32f5a1c3d5dd609" target="_blank" rel="noreferrer">Pe harta</a>
+                    <button class="button button--outline" type="button" data-open-form>Contacteaza-ne</button>
+                  </div>
+                </div>
+              </details>
+
+              <details class="branch-card">
+                <summary>
+                  <span class="branch-card__pin">3</span>
+                  <span>
+                    <strong>Sud Moldova (filiala parteneri)</strong>
+                    <small>Consultatie pentru proiecte si parteneri</small>
+                  </span>
+                </summary>
+                <div class="branch-card__body">
+                  <p>zona Comrat / Cahul, adresa se confirma la apel</p>
+                  <div class="branch-card__phone-row">
+                    <a class="branch-card__phone" href="tel:+37376599997">+37376599997</a>
+                    <div class="branch-card__messengers" aria-label="Messenger">
+                      <a class="branch-card__messenger branch-card__messenger--viber" href="viber://chat?number=%2B37376599997" aria-label="Viber">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M7.3 5.5c3.6-.9 7.5-.7 9.6 1.4 1.8 1.8 2 5.7 1.2 8.8-.4 1.5-1.5 2.4-3 2.6-.8.1-1.8.2-2.8.2l-3.2 2.2c-.5.3-1.1 0-1.1-.6v-1.9c-1.1-.2-2-.5-2.6-1.1-2.1-2.1-2.3-6-1.4-9.6.4-1.1 1.1-1.8 3.3-2Z"/>
+                          <path d="M9.2 8.5c.3-.2.7-.2 1 .1l.8 1c.2.3.2.7 0 1l-.4.5c.5 1 1.3 1.8 2.3 2.3l.5-.4c.3-.2.7-.2 1 0l1 .8c.3.2.4.7.1 1-.3.5-.8.9-1.4.9-2.7-.2-5.5-3-5.7-5.7-.1-.7.3-1.2.8-1.5Z"/>
+                        </svg>
+                      </a>
+                      <a class="branch-card__messenger branch-card__messenger--whatsapp" href="https://wa.me/37376599997" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M12 4.2a7.2 7.2 0 0 0-6.1 11l-1 3.7 3.8-1A7.2 7.2 0 1 0 12 4.2Z"/>
+                          <path d="M9.2 8.1c.2-.4.4-.4.8-.4h.5c.2 0 .4.1.6.5l.7 1.6c.1.3.1.5-.1.7l-.5.6c-.2.2-.2.4-.1.6.4.8 1 1.4 1.6 2 .7.6 1.4 1 2.2 1.2.2.1.4.1.6-.1l.7-.8c.2-.2.5-.3.8-.2l1.5.7c.4.2.5.4.5.6 0 .6-.4 1.4-.9 1.7-.6.4-1.4.4-2.4.1-3.4-1-6-3.5-7-6.7-.3-.9-.2-1.5.1-2.1l.4-.6Z"/>
+                        </svg>
+                      </a>
+                      <a class="branch-card__messenger branch-card__messenger--telegram" href="https://t.me/+37376599997" target="_blank" rel="noreferrer" aria-label="Telegram">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M20.8 4.6 17.9 19c-.2 1-1.1 1.2-1.8.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.4 8-7.2c.4-.3-.1-.5-.5-.2l-9.9 6.2-4.3-1.4c-.9-.3-.9-1 .2-1.4L19.3 4c.8-.3 1.6.2 1.5.6Z"/>
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="branch-card__phone-row">
+                    <a class="branch-card__phone" href="tel:+37376707170">+37376707170</a>
+                    <div class="branch-card__messengers" aria-label="Messenger">
+                      <a class="branch-card__messenger branch-card__messenger--viber" href="viber://chat?number=%2B37376707170" aria-label="Viber">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M7.3 5.5c3.6-.9 7.5-.7 9.6 1.4 1.8 1.8 2 5.7 1.2 8.8-.4 1.5-1.5 2.4-3 2.6-.8.1-1.8.2-2.8.2l-3.2 2.2c-.5.3-1.1 0-1.1-.6v-1.9c-1.1-.2-2-.5-2.6-1.1-2.1-2.1-2.3-6-1.4-9.6.4-1.1 1.1-1.8 3.3-2Z"/>
+                          <path d="M9.2 8.5c.3-.2.7-.2 1 .1l.8 1c.2.3.2.7 0 1l-.4.5c.5 1 1.3 1.8 2.3 2.3l.5-.4c.3-.2.7-.2 1 0l1 .8c.3.2.4.7.1 1-.3.5-.8.9-1.4.9-2.7-.2-5.5-3-5.7-5.7-.1-.7.3-1.2.8-1.5Z"/>
+                        </svg>
+                      </a>
+                      <a class="branch-card__messenger branch-card__messenger--whatsapp" href="https://wa.me/37376707170" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M12 4.2a7.2 7.2 0 0 0-6.1 11l-1 3.7 3.8-1A7.2 7.2 0 1 0 12 4.2Z"/>
+                          <path d="M9.2 8.1c.2-.4.4-.4.8-.4h.5c.2 0 .4.1.6.5l.7 1.6c.1.3.1.5-.1.7l-.5.6c-.2.2-.2.4-.1.6.4.8 1 1.4 1.6 2 .7.6 1.4 1 2.2 1.2.2.1.4.1.6-.1l.7-.8c.2-.2.5-.3.8-.2l1.5.7c.4.2.5.4.5.6 0 .6-.4 1.4-.9 1.7-.6.4-1.4.4-2.4.1-3.4-1-6-3.5-7-6.7-.3-.9-.2-1.5.1-2.1l.4-.6Z"/>
+                        </svg>
+                      </a>
+                      <a class="branch-card__messenger branch-card__messenger--telegram" href="https://t.me/+37376707170" target="_blank" rel="noreferrer" aria-label="Telegram">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M20.8 4.6 17.9 19c-.2 1-1.1 1.2-1.8.7l-4.3-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.4 8-7.2c.4-.3-.1-.5-.5-.2l-9.9 6.2-4.3-1.4c-.9-.3-.9-1 .2-1.4L19.3 4c.8-.3 1.6.2 1.5.6Z"/>
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                  <p>Luni-Vineri: 08:00 - 17:30, Sambata: 08:00 - 15:00</p>
+                  <div class="branch-card__actions">
+                    <a class="button button--primary" href="https://www.google.com/maps/search/?api=1&query=Comrat%20Cahul%20TEHNOFASAD" target="_blank" rel="noreferrer">Pe harta</a>
+                    <button class="button button--outline" type="button" data-open-form>Contacteaza-ne</button>
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            <div class="branch-map" aria-label="Harta filialelor TEHNOFASAD">
+              <div class="branch-map__canvas" aria-hidden="true">
+                <span class="branch-map__road branch-map__road--one"></span>
+                <span class="branch-map__road branch-map__road--two"></span>
+                <span class="branch-map__road branch-map__road--three"></span>
+                <span class="branch-map__label branch-map__label--balti">Balti</span>
+                <span class="branch-map__label branch-map__label--tvoy-dom">Tvoy Dom</span>
+                <span class="branch-map__label branch-map__label--south">Sud</span>
+              </div>
+              <a class="branch-map__marker branch-map__marker--balti" href="https://www.google.com/maps/search/?api=1&query=47.7741648,27.9116626" target="_blank" rel="noreferrer" aria-label="Balti"></a>
+              <a class="branch-map__marker branch-map__marker--tvoy-dom" href="https://www.google.com/maps/place/%D0%A0%D1%8B%D0%BD%D0%BE%D0%BA+%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D0%BE%D0%B2+%22%D0%A2%D0%B2%D0%BE%D0%B9+%D0%94%D0%BE%D0%BC%22/data=!4m2!3m1!1s0x0:0xc32f5a1c3d5dd609" target="_blank" rel="noreferrer" aria-label="Balti Tvoy Dom"></a>
+              <a class="branch-map__marker branch-map__marker--south" href="https://www.google.com/maps/search/?api=1&query=Comrat%20Cahul%20TEHNOFASAD" target="_blank" rel="noreferrer" aria-label="Sud Moldova"></a>
+              <div class="branch-map__panel">
+                <strong>TEHNOFASAD S.R.L.</strong>
+                <span>Telefon: +373(791)55791</span>
+                <span>Email: info@tehnofasad.md</span>
+                <div class="messenger-links messenger-links--contact">
+                  <a href="https://wa.me/37379155791" target="_blank" rel="noreferrer">WhatsApp</a>
+                  <a href="viber://chat?number=%2B37379155791">Viber</a>
+                  <a href="https://t.me/+37379155791" target="_blank" rel="noreferrer">Telegram</a>
+                </div>
               </div>
             </div>
-            <button class="contact-card contact-card--button" type="button" data-open-form>
-              <span>Oferta</span>
-              <strong>Completeaza formularul</strong>
-            </button>
-            <a class="contact-card" href="https://www.google.com/maps/search/?api=1&query=47.7741648,27.9116626" target="_blank" rel="noreferrer">
-              <span>Harta</span>
-              <strong>Deschide in Google Maps</strong>
-            </a>
           </div>
         </div>
       </section>
@@ -845,7 +1004,7 @@
         </nav>
         <div>
           <strong>Contact</strong>
-          <p>mun. Balti, str. Lev Dovator 1<br>+373 791 55 791<br>info@tehnofasad.md</p>
+          <p>mun. Balti, str. Lev Dovator 1<br>+373(791)55791<br>info@tehnofasad.md</p>
         </div>
       </div>
       <div class="footer-bottom">
@@ -926,7 +1085,7 @@
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.63 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.15a2 2 0 0 1 2.11-.45c.83.3 1.7.51 2.6.63A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            +373 791 55 791
+            +373(791)55791
           </a>
           <button class="ai-chat__close" type="button" aria-label="Inchide chatul">x</button>
         </header>
