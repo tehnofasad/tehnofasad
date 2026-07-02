@@ -1769,133 +1769,117 @@ h3 {
   margin-top: 6px;
 }
 
-.branch-map {
+.filiale-map {
   position: sticky;
   top: 118px;
   min-height: 620px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
-  background:
-    radial-gradient(circle at 30% 24%, rgba(223, 47, 47, 0.18), transparent 18%),
-    radial-gradient(circle at 66% 58%, rgba(255, 255, 255, 0.12), transparent 20%),
-    linear-gradient(135deg, #26313b, #121b24 74%);
   overflow: hidden;
-  contain: paint;
   box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
 }
 
-.branch-map::after {
-  content: "";
+.filiale-map__canvas {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(16, 24, 32, 0.08), rgba(16, 24, 32, 0.18));
-  background-size: 64px 64px, 64px 64px, auto;
-  pointer-events: none;
+  background: var(--bg-soft);
 }
 
-.branch-map__canvas {
-  position: absolute;
-  inset: 0;
+/* Затемняем тайлы OSM под тёмную тему сайта */
+.filiale-map__canvas .leaflet-tile-pane {
+  filter: grayscale(0.25) invert(1) contrast(0.86) brightness(0.94) hue-rotate(180deg);
 }
 
-.branch-map__road {
-  position: absolute;
-  z-index: 1;
-  height: 7px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.34);
-  box-shadow: 0 0 0 2px rgba(16, 24, 32, 0.36);
+.filiale-map__canvas .leaflet-control-attribution {
+  background: rgba(16, 24, 32, 0.72);
+  color: rgba(255, 255, 255, 0.55);
 }
 
-.branch-map__road--one {
-  top: 26%;
-  left: 4%;
-  width: 66%;
-  transform: rotate(-16deg);
+.filiale-map__canvas .leaflet-control-attribution a {
+  color: rgba(255, 255, 255, 0.75);
 }
 
-.branch-map__road--two {
-  top: 54%;
-  right: 4%;
-  width: 72%;
-  transform: rotate(20deg);
-}
-
-.branch-map__road--three {
-  top: 72%;
-  left: 18%;
-  width: 56%;
-  transform: rotate(-36deg);
-}
-
-.branch-map__label {
-  position: absolute;
-  z-index: 2;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  padding: 8px 12px;
+.filiale-map__canvas .leaflet-control-zoom a {
+  background: rgba(16, 24, 32, 0.88);
   color: #fff;
-  background: rgba(16, 24, 32, 0.74);
-  font-size: 0.82rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0;
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
-.branch-map__label--balti {
-  top: 18%;
-  left: 28%;
+.filiale-map__canvas .leaflet-control-zoom a:hover {
+  background: var(--accent);
 }
 
-.branch-map__label--tvoy-dom {
-  top: 34%;
-  left: 54%;
+.filiale-pin {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.4));
 }
 
-.branch-map__label--south {
-  top: 80%;
-  left: 38%;
-}
-
-.branch-map__marker {
-  position: absolute;
-  z-index: 2;
+.filiale-pin__pointer {
   width: 28px;
   height: 28px;
-  border: 5px solid #fff;
+  border: 4px solid #fff;
   border-radius: 999px 999px 999px 0;
   background: var(--accent);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.34);
   transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.branch-map__marker::after {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  border-radius: 999px;
-  background: #fff;
+.filiale-pin__number {
+  transform: rotate(45deg);
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.8rem;
 }
 
-.branch-map__marker--balti {
-  top: 24%;
-  left: 43%;
+.leaflet-popup-content-wrapper {
+  background: rgba(16, 24, 32, 0.92);
+  color: #fff;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(10px);
 }
 
-.branch-map__marker--tvoy-dom {
-  top: 39%;
-  left: 66%;
+.leaflet-popup-tip {
+  background: rgba(16, 24, 32, 0.92);
 }
 
-.branch-map__marker--south {
-  top: 76%;
-  left: 54%;
+.leaflet-popup-content {
+  margin: 14px 16px;
+  line-height: 1.5;
 }
 
-.branch-map__panel {
+.filiale-popup strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.filiale-popup span {
+  display: block;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.88rem;
+}
+
+.filiale-popup a {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--accent);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.leaflet-popup-close-button {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.filiale-map__panel {
   position: absolute;
   z-index: 3;
   left: 18px;
@@ -1910,9 +1894,14 @@ h3 {
   background: rgba(16, 24, 32, 0.88);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(10px);
+  pointer-events: none;
 }
 
-.branch-map__panel span {
+.filiale-map__panel a {
+  pointer-events: auto;
+}
+
+.filiale-map__panel span {
   color: rgba(255, 255, 255, 0.72);
 }
 
@@ -3176,7 +3165,7 @@ body.ai-chat-open .floating-messengers {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .branch-map {
+  .filiale-map {
     position: relative;
     top: auto;
   }
@@ -3374,10 +3363,10 @@ body.ai-chat-open .floating-messengers {
     width: 100%;
   }
 
-  .branch-map {
+  .filiale-map {
     position: relative;
     top: auto;
-    min-height: 440px;
+    min-height: 320px;
   }
 
   .site-footer {

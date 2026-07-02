@@ -905,3 +905,81 @@ aiQuickButtons.forEach((button) => {
     sendAiChatMessage(button.dataset.aiPrompt);
   });
 });
+
+// --- Harta filialelor (Leaflet) ---
+const filialeMapEl = document.querySelector("[data-filiale-map]");
+
+if (filialeMapEl && window.L) {
+  const branches = [
+    {
+      number: 1,
+      name: "Balti (depozit principal)",
+      address: "mun. Balti, str. Lev Dovator, 1",
+      phone: "+373(791)55791",
+      telHref: "tel:+37379155791",
+      lat: 47.7741648,
+      lng: 27.9116626,
+      mapHref: "https://www.google.com/maps/search/?api=1&query=47.7741648,27.9116626",
+    },
+    {
+      number: 2,
+      name: "Balti (piata Tvoy Dom)",
+      address: "mun. Balti, str. Locomotivelor, 4",
+      phone: "+373(231)7-08-10",
+      telHref: "tel:+37323170810",
+      lat: 47.785758,
+      lng: 27.915462,
+      mapHref: "https://www.google.com/maps/place/%D0%A0%D1%8B%D0%BD%D0%BE%D0%BA+%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D0%BE%D0%B2+%22%D0%A2%D0%B2%D0%BE%D0%B9+%D0%94%D0%BE%D0%BC%22/data=!4m2!3m1!1s0x0:0xc32f5a1c3d5dd609",
+    },
+    {
+      number: 3,
+      name: "Eurofasad",
+      address: "Balti, s. Corlateni",
+      phone: "+37376599997",
+      telHref: "tel:+37376599997",
+      lat: 47.7926212,
+      lng: 27.879512,
+      mapHref: "https://maps.app.goo.gl/xePpVqr6Zmmbfcxm9",
+    },
+  ];
+
+  const map = L.map(filialeMapEl, {
+    scrollWheelZoom: false,
+    attributionControl: true,
+  }).setView([47.784, 27.9], 12);
+
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 19,
+  }).addTo(map);
+
+  const bounds = [];
+
+  branches.forEach((branch) => {
+    const icon = L.divIcon({
+      className: "",
+      html: `<div class="filiale-pin"><div class="filiale-pin__pointer"><span class="filiale-pin__number">${branch.number}</span></div></div>`,
+      iconSize: [34, 34],
+      iconAnchor: [17, 30],
+      popupAnchor: [0, -30],
+    });
+
+    const marker = L.marker([branch.lat, branch.lng], { icon }).addTo(map);
+
+    marker.bindPopup(`
+      <div class="filiale-popup">
+        <strong>${branch.name}</strong>
+        <span>${branch.address}</span>
+        <span>${branch.phone}</span>
+        <a href="${branch.mapHref}" target="_blank" rel="noreferrer">Deschide in Google Maps &rarr;</a>
+      </div>
+    `);
+
+    bounds.push([branch.lat, branch.lng]);
+  });
+
+  map.fitBounds(bounds, { padding: [48, 48] });
+
+  filialeMapEl.addEventListener("click", () => map.scrollWheelZoom.enable());
+  filialeMapEl.addEventListener("mouseleave", () => map.scrollWheelZoom.disable());
+}
