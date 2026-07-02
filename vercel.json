@@ -20,7 +20,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md https://*.basemaps.cartocdn.com; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
         },
         {
           "key": "X-Content-Type-Options",
@@ -59,7 +59,7 @@
       "dest": "/api/server.js",
       "headers": {
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
-        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
+        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md https://*.basemaps.cartocdn.com; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
         "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -74,7 +74,7 @@
       "dest": "/api/server.js",
       "headers": {
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
-        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
+        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md https://*.basemaps.cartocdn.com; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
         "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -89,7 +89,7 @@
       "dest": "/public/assets/$1",
       "headers": {
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
-        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
+        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md https://*.basemaps.cartocdn.com; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
         "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -104,7 +104,7 @@
       "dest": "/public/$1",
       "headers": {
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
-        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
+        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md https://*.basemaps.cartocdn.com; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
         "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -119,7 +119,7 @@
       "dest": "/public/index.html",
       "headers": {
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
-        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
+        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-omb2rf6/tsVFYx8Qgk8r7YSvoDv9kv9em08eGlXn2gc='; style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tehnofasad.md https://www.tehnofasad.md https://*.basemaps.cartocdn.com; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
         "Referrer-Policy": "strict-origin-when-cross-origin",
