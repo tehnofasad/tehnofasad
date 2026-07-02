@@ -1791,12 +1791,15 @@ h3 {
 }
 
 .filiale-map__canvas .leaflet-control-attribution {
-  background: rgba(16, 24, 32, 0.72);
-  color: rgba(255, 255, 255, 0.55);
+  background: rgba(16, 24, 32, 0.55);
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.62rem;
+  padding: 1px 5px;
+  border-radius: 4px 0 0 0;
 }
 
 .filiale-map__canvas .leaflet-control-attribution a {
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .filiale-map__canvas .leaflet-control-zoom a {

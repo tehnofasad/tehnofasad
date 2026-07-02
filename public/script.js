@@ -945,11 +945,15 @@ if (filialeMapEl && window.L) {
 
   const map = L.map(filialeMapEl, {
     scrollWheelZoom: false,
-    attributionControl: true,
+    attributionControl: false,
   }).setView([47.784, 27.9], 12);
 
+  L.control.attribution({ prefix: false, position: "bottomright" })
+    .addAttribution('&copy; OSM &copy; CARTO')
+    .addTo(map);
+
   L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    attribution: '',
     maxZoom: 19,
   }).addTo(map);
 
